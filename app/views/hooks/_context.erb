@@ -3,29 +3,31 @@
      #concat f.field_format
      %w(string date int).include?(f.field_format)
    end
+
+   first_issue = @issues.first
 %>
   <li class="folder">
     <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
     <ul>
-      <%= quick_edit_link(l(:field_subject), :subject, :string, !@can[:update]) %>
-      <%= quick_edit_link(l(:field_parent_issue), :parent_issue_id, :int, !@can[:update]) %>
+      <%= quick_edit_link(l(:field_subject), :subject, :string, first_issue.subject, !@can[:update]) %>
+      <%= quick_edit_link(l(:field_parent_issue), :parent_issue_id, :int, first_issue.parent_id, !@can[:update]) %>
 
 
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('start_date') } %>
-      <%= quick_edit_link(l(:field_start_date), :start_date, :date, !@can[:update]) %>
+      <%= quick_edit_link(l(:field_start_date), :start_date, :date, first_issue.start_date, !@can[:update]) %>
       <% end %>
 
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('due_date') } %>
-      <%= quick_edit_link(l(:field_due_date), :due_date, :date, !@can[:update]) %>
+      <%= quick_edit_link(l(:field_due_date), :due_date, :date, first_issue.due_date, !@can[:update]) %>
       <% end %>
 
       <% custom_fields.each do |f| %>
-      <%= quick_edit_link(f.name, 'custom_field_values[%d]' % f.id, f.field_format, !@can[:update]) %>
+      <%= quick_edit_link(f.name, 'custom_field_values[%d]' % f.id, f.field_format, first_issue.custom_field_values[f.id], !@can[:update]) %>
       <% end %>
    </ul>
   </li>
   <div id="quick_edit_input_dialog" style="display:none;" title="Quick Edit">
-     <span id="quick_edit_input_dialog_message"></span>
+     <p id="quick_edit_input_dialog_message"></p>
      <form>
         <input id="quick_edit_input_dialog_new_value" type="text" size="50"></input>
         <input id="quick_edit_input_dialog_target" type="hidden"></input>
@@ -36,7 +38,11 @@
 
 <script>
 //<![CDATA[
-function quick_edit_show_input_dialog(target,pattern,message){
+function quick_edit_show_input_dialog(field_name,target,pattern,message,default_value){
+  if (default_value) {
+     $("#quick_edit_input_dialog_new_value").val(default_value);
+  }
+  $("#quick_edit_input_dialog").attr('title','Quick Edit - ' + field_name);
   $("#quick_edit_input_dialog_target").val(target);
   $("#quick_edit_input_dialog_pattern").val(pattern);
   $("#quick_edit_input_dialog_message").html(message);
@@ -44,7 +50,7 @@ function quick_edit_show_input_dialog(target,pattern,message){
      modal: true,
      closeOnEscape: false,
      width: 500,
-     height: 150,
+     height: 200,
      buttons: {
         "Ok" : quick_edit_input_dialog_ok,
         "Cancel" : quick_edit_input_dialog_cancel
