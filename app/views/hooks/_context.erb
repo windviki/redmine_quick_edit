@@ -22,17 +22,26 @@
       <%= quick_edit_link_to(l(:field_due_date), :due_date, :date, first_issue.due_date, !@can[:update]) %>
       <% end %>
 
+      <% first_issue.editable_custom_field_values.each do |f| %>
+      <% logger.info(""+f.class.name + "[" + f.custom_field_id.to_s + "]= " + f.value.to_s);
+       end %>
       <% custom_fields.each do |f| %>
-      <%= quick_edit_link_to(f.name, 'custom_field_values[%d]' % f.id, f.field_format, first_issue.custom_field_values[f.id], !@can[:update]) %>
+      <%= quick_edit_link_to(f.name, 'custom_field_values[%d]' % f.id, f.field_format, first_issue.editable_custom_field_values.detect {|v| v.custom_field_id == f.id}, !@can[:update]) %>
       <% end %>
    </ul>
   </li>
   <div id="quick_edit_input_dialog" style="display:none;" title="Quick Edit">
      <p id="quick_edit_input_dialog_message"></p>
      <form>
+        <fieldset id="text_fields" style="border: none; margin:none; padding: none;">
         <input id="quick_edit_input_dialog_new_value" type="text" size="40" style="vertical-align:middle;"></input>
-        <%= calendar_for('quick_edit_input_dialog_new_value') %>
+        </fieldset>
+        <fieldset id="date_fields" style="border: none; margin:none; padding: none;">
+        <input id="quick_edit_input_dialog_new_date_value" type="text" size="40" style="vertical-align:middle;"></input>
+        <%= calendar_for('quick_edit_input_dialog_new_date_value') %>
+        </fieldset>
         <input id="quick_edit_input_dialog_target" type="hidden"></input>
+        <input id="quick_edit_input_dialog_field_type" type="hidden"></input>
         <input id="quick_edit_input_dialog_pattern" type="hidden"></input>
         <input id="quick_edit_input_dialog_dummy" type="text" style="display:none"></input>
      </form> 
@@ -40,12 +49,29 @@
 
 <script>
 //<![CDATA[
+function quick_edit_get_value_element(field_type) {
+  if (field_type == 'date') {
+     return $('#quick_edit_input_dialog_new_date_value');
+  } else {
+     return $('#quick_edit_input_dialog_new_value');
+  }
+}
+
 function quick_edit_show_input_dialog(field_name,target,field_type,pattern,message,default_value){
+  if (field_type == 'date') {
+     $("#quick_edit_input_dialog > form > #text_fields").css("display", "none");
+     $("#quick_edit_input_dialog > form > #date_fields").css("display", "block");
+  } else {
+     $("#quick_edit_input_dialog > form > #text_fields").css("display", "block");
+     $("#quick_edit_input_dialog > form > #date_fields").css("display", "none");
+  }
+
   if (default_value) {
-     $("#quick_edit_input_dialog_new_value").val(default_value);
+     quick_edit_get_value_element(field_type).val(default_value);
   }
   $("#quick_edit_input_dialog").attr('title','Quick Edit - ' + field_name);
   $("#quick_edit_input_dialog_target").val(target);
+  $("#quick_edit_input_dialog_field_type").val(field_type);
   $("#quick_edit_input_dialog_pattern").val(pattern);
   $("#quick_edit_input_dialog_message").html(message);
   $("#quick_edit_input_dialog").dialog({
@@ -70,7 +96,8 @@ function quick_edit_input_dialog_cancel(){
 }
 
 function quick_edit_input_dialog_ok(){
-  var new_value = $("#quick_edit_input_dialog_new_value").val();
+  var field_type = $("#quick_edit_input_dialog_field_type").val();
+  var new_value = quick_edit_get_value_element(field_type).val();
   if(new_value === null) return;
 
   var target = $("#quick_edit_input_dialog_target").val();
