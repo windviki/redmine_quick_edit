@@ -1,7 +1,7 @@
 #coding: utf-8
 
 module ApplicationHelper
-   def quick_edit_link(caption, target_field, field_type, default_value, disabled)
+   def quick_edit_link_to(caption, target_field, field_type, default_value, disabled)
       help_message= l(:text_edit_confirm)
 
       case field_type.to_s
@@ -19,7 +19,7 @@ module ApplicationHelper
       sprintf('<li>%s%s</li>',
          context_menu_link(
             h(caption),
-            "javascript:quick_edit_show_input_dialog('#{caption}', '#{target_field}', '#{pattern}', '#{help_message}', '#{default_value}')",
+            "javascript:quick_edit_show_input_dialog('#{caption}', '#{target_field}', '#{field_type}', '#{pattern}', '#{help_message}', '#{default_value}')",
             :class => 'icon-edit',
             :disabled => disabled
          ),
