@@ -6,6 +6,6 @@ require_dependency File.expand_path('../hooks', __FILE__)
 Redmine::Plugin.register :quick_edit do
   name 'Quick Edit plugin'
   author 'Akira Saito'
-  description 'This is a plugin for Redmine'
-  version '0.0.1'
+  description 'This plugin provides ability to edit a fields of the issue at the issues page.'
+  version '0.0.4'
 end
