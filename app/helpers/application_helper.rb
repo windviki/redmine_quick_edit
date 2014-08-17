@@ -13,7 +13,6 @@ module ApplicationHelper
          pattern = '\d{4}-\d{2}-\d{2}'
          help_message += " (yyyy-mm-dd)"
       end
-      logger.info("#{target_field} => #{field_type} : " + default_value.inspect + ", " + default_value.class.name + ", " + default_value.nil?.to_s); 
 
       pattern = h(pattern.gsub(/\\/,'\\\\\\\\'))
 
