@@ -22,9 +22,6 @@
       <%= quick_edit_link_to(l(:field_due_date), :due_date, :date, first_issue.due_date, !@can[:update]) %>
       <% end %>
 
-      <% first_issue.editable_custom_field_values.each do |f| %>
-      <% logger.info(""+f.class.name + "[" + f.custom_field_id.to_s + "]= " + f.value.to_s);
-       end %>
       <% custom_fields.each do |f| %>
       <%= quick_edit_link_to(f.name, 'custom_field_values[%d]' % f.id, f.field_format, first_issue.editable_custom_field_values.detect {|v| v.custom_field_id == f.id}, !@can[:update]) %>
       <% end %>
