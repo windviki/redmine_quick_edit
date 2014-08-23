@@ -25,6 +25,20 @@
       <% custom_fields.each do |f| %>
       <%= quick_edit_link_to(f.name, 'custom_field_values[%d]' % f.id, f.field_format, first_issue.editable_custom_field_values.detect {|v| v.custom_field_id == f.id}, !@can[:update]) %>
       <% end %>
+
+      <hr>
+
+      <% first_issue.relations.each do |relation| %>
+        <% other_issue = relation.other_issue(first_issue) %>
+        <li><%= link_to "#{other_issue.subject}",
+                                  relation_path(relation, :back_url => @back),
+                                  :remote => false,
+                                  :method => :delete,
+                                  :data => {:confirm => l(:text_are_you_sure)},
+                                  :title => l(:label_relation_delete),
+                                  :class => 'icon',
+                                  :style => 'background-image: url("/images/link_break.png");'  if User.current.allowed_to?(:manage_issue_relations, @project) %></li>
+      <% end %>
    </ul>
   </li>
   <div id="quick_edit_input_dialog" style="display:none;" title="Quick Edit">
