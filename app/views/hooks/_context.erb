@@ -6,6 +6,9 @@
    end
 
    first_issue = @issues.first
+   if @issues.size == 2
+      second_issue = @issues[1]
+   end
 %>
   <li class="folder">
     <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
@@ -28,6 +31,18 @@
 
       <hr>
 
+      <% if @issues.size == 2  %>
+      <li><%= link_to l(:label_add_relates_to, :id=>second_issue.id),
+                      issue_relations_path(:issue_id => first_issue.id,
+                        :relation => {:relation_type => :relates, :issue_to_id => second_issue.id} ),
+                      :method => :post,
+                      :action => :create,
+                      :class => 'icon',
+                      :style => 'background-image: url("/images/link.png")' %></li>
+      <% end %>
+
+      <hr>
+
       <% first_issue.relations.each do |relation| %>
         <% other_issue = relation.other_issue(first_issue) %>
         <li><%= link_to "#{other_issue.subject}",
@@ -37,7 +52,7 @@
                                   :data => {:confirm => l(:text_are_you_sure)},
                                   :title => l(:label_relation_delete),
                                   :class => 'icon',
-                                  :style => 'background-image: url("/images/link_break.png");'  if User.current.allowed_to?(:manage_issue_relations, @project) %></li>
+                                  :style => 'background-image: url("/images/link_break.png");' if User.current.allowed_to?(:manage_issue_relations, @project) %></li>
       <% end %>
    </ul>
   </li>
