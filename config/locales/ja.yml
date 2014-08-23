@@ -1,8 +1,5 @@
 # English strings go here for Rails i18n
 ja:
-  label_context_edit: コンテキスト・エディット
-  project_module_context_edit: コンテキスト・エディット プラグイン
-
   button_quick_edit: Quick Edit
   label_edit_subject: 題名
   label_add_relates_to: '関連 #%{id}'
