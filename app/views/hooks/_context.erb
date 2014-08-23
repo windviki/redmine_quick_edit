@@ -34,23 +34,30 @@
       <li><%= link_to l(:label_add_relates_to, :id=>second_issue.id),
                       issue_relations_path(:issue_id => first_issue.id,
                         :relation => {:relation_type => :relates, :issue_to_id => second_issue.id} ),
+                      :remote => false,
                       :method => :post,
                       :action => :create,
+                      :data => {:confirm => l(:text_are_you_sure)},
+                      :title => l(:label_relation_new),
                       :class => 'icon',
                       :style => 'background-image: url("/images/link.png")' %></li>
       <% end %>
 
-      <% first_issue.relations.each do |relation| %>
-      <hr>
-        <% other_issue = relation.other_issue(first_issue) %>
-        <li><%= link_to "#{other_issue.subject}",
-                                  relation_path(relation, :back_url => @back),
-                                  :remote => false,
-                                  :method => :delete,
-                                  :data => {:confirm => l(:text_are_you_sure)},
-                                  :title => l(:label_relation_delete),
-                                  :class => 'icon',
-                                  :style => 'background-image: url("/images/link_break.png");' if User.current.allowed_to?(:manage_issue_relations, @project) %></li>
+      <% if @issues.size == 1 && first_issue.relations.any? %>
+        <hr>
+        <% first_issue.relations.each do |relation| %>
+          <% other_issue = relation.other_issue(first_issue) %>
+          <% if User.current.allowed_to?(:manage_issue_relations, @project) %>
+            <li><%= link_to l(relation.label_for(first_issue)) + " \##{other_issue.id}",
+                            relation_path(relation),
+                            :remote => false,
+                            :method => :delete,
+                            :data => {:confirm => l(:text_are_you_sure)},
+                            :title => l(:label_relation_delete),
+                            :class => 'icon',
+                            :style => 'background-image: url("/images/link_break.png");' %></li>
+          <% end %> 
+        <% end %>
       <% end %>
    </ul>
   </li>
