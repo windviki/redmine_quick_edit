@@ -32,8 +32,9 @@
       <% if @issues.size == 2  %>
       <hr>
       <li><%= link_to l(:label_add_relates_to, :id=>second_issue.id),
-                      issue_relations_path(:issue_id => first_issue.id,
-                        :relation => {:relation_type => :relates, :issue_to_id => second_issue.id} ),
+                      issue_quick_edit_relations_path(:issue_id => first_issue.id,
+                        :relation => {:relation_type => :relates, :issue_to_id => second_issue.id},
+                        :back_url => @back ),
                       :remote => false,
                       :method => :post,
                       :action => :create,
