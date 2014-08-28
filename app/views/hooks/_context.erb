@@ -1,5 +1,6 @@
 <%
    extend ApplicationHelper
+   extend IssueRelationsHelper
    custom_fields = @issues.map(&:available_custom_fields).reduce(:&).select do |f|
      #concat f.field_format
      %w(string date int).include?(f.field_format)
@@ -31,14 +32,9 @@
 
       <% if @issues.size == 2  %>
       <hr>
-      <li><%= link_to l(:label_add_relates_to, :id=>second_issue.id),
-                      issue_quick_edit_relations_path(:issue_id => first_issue.id,
-                        :relation => {:relation_type => :relates, :issue_to_id => second_issue.id},
-                        :back_url => @back ),
+      <li><%= link_to l(:label_relation_new),
+                      'javascript: quick_edit_show_new_relation_dialog();',
                       :remote => false,
-                      :method => :post,
-                      :action => :create,
-                      :data => {:confirm => l(:text_are_you_sure)},
                       :title => l(:label_relation_new),
                       :class => 'icon',
                       :style => 'background-image: url("/images/link.png")' %></li>
@@ -78,6 +74,28 @@
         <input id="quick_edit_input_dialog_dummy" type="text" style="display:none"></input>
      </form> 
   </div>
+
+  <% if @issues.size > 1 %>
+  <div id="quick_edit_new_relation_dialog" style="display:none;" title="Quick Edit - <%= l(:label_relation_new) %>">
+    <%= form_tag({:controller=>'quick_edit_relations', :action=>:create}) do %>
+      <%= text_field_tag :issue_id, first_issue.id, { :size => 10 } %>
+      <%= select :relation, :relation_type, collection_for_relation_type_select, {}, :onchange => "setPredecessorFieldsVisibility();"  %>
+      <%= text_field_tag 'relation[issue_to_id]', second_issue.id, { :size => 10 } %>
+      <%= hidden_field_tag :back_url, @back %>
+      <span id="predecessor_fields" style="display:none;">
+      <br><%= l(:field_delay) %>: <%= text_field_tag :delay, '', {:size => 3} %> <%= l(:label_day_plural) %>
+      </span><br>
+      <hr> 
+      <%= submit_tag l(:button_add) %>
+      <%= submit_tag l(:button_cancel), :onclick => 'javascript: quick_edit_new_relation_dialog_cancel();', :type => 'button' %>
+
+      <%= javascript_tag "observeAutocompleteField('relation_issue_to_id', '#{escape_javascript auto_complete_issues_path(:project_id => @project, :scope => (Setting.cross_project_issue_relations? ? 'all' : nil))}')" %>
+
+      <%= javascript_tag "setPredecessorFieldsVisibility();" %>
+
+    <% end %>
+  </div>
+  <% end %>
 
 <script>
 //<![CDATA[
@@ -176,6 +194,25 @@ function quick_edit_input_dialog_ok(){
      .attr('href',bulk_update_url)
      .click();
 }
+
+function quick_edit_show_new_relation_dialog(){
+  $("#quick_edit_new_relation_dialog").dialog({
+     modal: true,
+     closeOnEscape: false,
+     width: 450,
+     height: 150,
+     close: quick_edit_new_relation_dialog_close
+  });
+}
+
+function quick_edit_new_relation_dialog_cancel(){
+   $('#quick_edit_new_relation_dialog').dialog("close");
+}
+
+function quick_edit_new_relation_dialog_close(){
+   $('#quick_edit_new_relation_dialog').remove();
+}
+
 //]]>
 </script>
 
