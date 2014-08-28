@@ -1,9 +1,6 @@
 class QuickEditRelationsController < ApplicationController
   before_filter :find_issue, :find_project_from_association, :authorize, :only => [:create]
-  before_filter :find_relation, :except => [:index, :create]
-
-  def index
-  end
+  before_filter :find_relation, :except => [:create]
 
   def create
     @relation = IssueRelation.new(params[:relation])
@@ -16,9 +13,6 @@ class QuickEditRelationsController < ApplicationController
     back_url = params[:back_url]
     respond_to do |format|
       format.html { redirect_to back_url }
-      format.js {
-        @relations = @issue.reload.relations.select {|r| r.other_issue(@issue) && r.other_issue(@issue).visible? }
-      }
     end
   end
 
@@ -29,8 +23,6 @@ class QuickEditRelationsController < ApplicationController
     back_url = params[:back_url]
     respond_to do |format|
       format.html { redirect_to back_url }
-      format.js
-      format.api  { render_api_ok }
     end
   end
 
