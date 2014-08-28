@@ -89,6 +89,7 @@
       <%= submit_tag l(:button_add) %>
       <%= submit_tag l(:button_cancel), :onclick => 'javascript: quick_edit_new_relation_dialog_cancel();', :type => 'button' %>
 
+      <%= javascript_tag "observeAutocompleteField('issue_id', '#{escape_javascript auto_complete_issues_path(:project_id => @project, :scope => (Setting.cross_project_issue_relations? ? 'all' : nil))}')" %>
       <%= javascript_tag "observeAutocompleteField('relation_issue_to_id', '#{escape_javascript auto_complete_issues_path(:project_id => @project, :scope => (Setting.cross_project_issue_relations? ? 'all' : nil))}')" %>
 
       <%= javascript_tag "setPredecessorFieldsVisibility();" %>
