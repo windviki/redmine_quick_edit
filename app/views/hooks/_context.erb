@@ -10,6 +10,13 @@
    if @issues.size == 2
       second_issue = @issues[1]
    end
+
+   # 可能なら更新後に選択されたチケットに戻り先に設定
+   if @back.match(/\/projects\/.*?\/issues/)
+     back_url = @back + '#issue-' + first_issue.id.to_s
+   else
+     back_url = @back
+   end
 %>
   <li class="folder">
     <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
@@ -31,13 +38,15 @@
       <% end %>
 
       <% if @issues.size == 2  %>
-      <hr>
-      <li><%= link_to l(:label_relation_new),
-                      'javascript: quick_edit_show_new_relation_dialog();',
-                      :remote => false,
-                      :title => l(:label_relation_new),
-                      :class => 'icon',
-                      :style => 'background-image: url("/images/link.png")' %></li>
+        <% if User.current.allowed_to?(:manage_issue_relations, @project) %>
+        <hr>
+        <li><%= link_to l(:label_relation_new),
+                        'javascript: quick_edit_show_new_relation_dialog();',
+                        :remote => false,
+                        :title => l(:label_relation_new),
+                        :class => 'icon',
+                        :style => 'background-image: url("/images/link.png")' %></li>
+        <% end %>
       <% end %>
 
       <% if @issues.size == 1 && first_issue.relations.any? %>
@@ -46,7 +55,7 @@
           <% other_issue = relation.other_issue(first_issue) %>
           <% if User.current.allowed_to?(:manage_issue_relations, @project) %>
             <li><%= link_to l(relation.label_for(first_issue)) + " \##{other_issue.id}",
-                            quick_edit_relation_path(relation, :back_url => @back),
+                            quick_edit_relation_path(relation, :back_url => back_url),
                             :remote => false,
                             :method => :delete,
                             :data => {:confirm => l(:text_are_you_sure)},
@@ -81,7 +90,7 @@
       <%= text_field_tag :issue_id, first_issue.id, { :size => 10 } %>
       <%= select :relation, :relation_type, collection_for_relation_type_select, {}, :onchange => "setPredecessorFieldsVisibility();"  %>
       <%= text_field_tag 'relation[issue_to_id]', second_issue.id, { :size => 10 } %>
-      <%= hidden_field_tag :back_url, @back %>
+      <%= hidden_field_tag :back_url, back_url %>
       <span id="predecessor_fields" style="display:none;">
       <br><%= l(:field_delay) %>: <%= text_field_tag :delay, '', {:size => 3} %> <%= l(:label_day_plural) %>
       </span><br>
@@ -182,7 +191,7 @@ function quick_edit_input_dialog_ok(){
   }
 
   var bulk_update_html_id = '';
-  var bulk_update_url =  '<%= bulk_update_issues_path(:ids => @issue_ids, :back_url => @back)%>';
+  var bulk_update_url =  '<%= bulk_update_issues_path(:ids => @issue_ids, :back_url => back_url)%>';
   if (additional_index === null) {
       bulk_update_html_id = '#context_edit_update_link_' + target_name;
       bulk_update_url += encodeURI('&issue['+target_name+']='+new_value);
