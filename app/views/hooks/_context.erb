@@ -45,7 +45,7 @@
                         :remote => false,
                         :title => l(:label_relation_new),
                         :class => 'icon',
-                        :style => 'background-image: url("/images/link.png")' %></li>
+                        :style => 'background-image: url("'+image_path('link.png')+'")' %></li>
         <% end %>
       <% end %>
 
@@ -61,7 +61,7 @@
                             :data => {:confirm => l(:text_are_you_sure)},
                             :title => l(:label_relation_delete),
                             :class => 'icon',
-                            :style => 'background-image: url("/images/link_break.png");' %></li>
+                            :style => 'background-image: url("'+image_path('link_break.png')+'");' %></li>
           <% end %> 
         <% end %>
       <% end %>
