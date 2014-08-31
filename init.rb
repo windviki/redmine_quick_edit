@@ -7,7 +7,7 @@ Redmine::Plugin.register :quick_edit do
   name 'Quick Edit plugin'
   author 'Akira Saito'
   description 'This plugin provides ability to edit a fields of the issue at the issues page.'
-  version '0.0.5'
+  version '0.0.6'
 
   permission :manage_quick_edit_relations, {:quick_edit_relations => [:create, :destroy]}, :public => true
 end
