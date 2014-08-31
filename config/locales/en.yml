@@ -2,7 +2,6 @@
 en:
   button_quick_edit: Quick Edit
   label_edit_subject: Subject
-  label_add_relates_to: 'Relate #%{id}'
   text_edit_confirm: Please, input a new value.
   text_is_required: can't be empty.
   text_none_is_invalid: can't specify the 'none'.its a special value.
