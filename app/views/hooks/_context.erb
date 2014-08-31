@@ -7,7 +7,7 @@
    end
 
    first_issue = @issues.first
-   if @issues.size == 2
+   if @issues.size > 1
       second_issue = @issues[1]
    end
 
@@ -84,12 +84,15 @@
      </form> 
   </div>
 
-  <% if @issues.size > 1 %>
+  <% if @issues.size == 2 %>
   <div id="quick_edit_new_relation_dialog" style="display:none;" title="Quick Edit - <%= l(:label_relation_new) %>">
+    <%
+       issue_to_id = second_issue.id
+    %>
     <%= form_tag({:controller=>'quick_edit_relations', :action=>:create}) do %>
       <%= text_field_tag :issue_id, first_issue.id, { :size => 10 } %>
       <%= select :relation, :relation_type, collection_for_relation_type_select, {}, :onchange => "setPredecessorFieldsVisibility();"  %>
-      <%= text_field_tag 'relation[issue_to_id]', second_issue.id, { :size => 10 } %>
+      <%= text_field_tag 'relation[issue_to_id]', issue_to_id, { :size => 10 } %>
       <%= hidden_field_tag :back_url, back_url %>
       <span id="predecessor_fields" style="display:none;">
       <br><%= l(:field_delay) %>: <%= text_field_tag :delay, '', {:size => 3} %> <%= l(:label_day_plural) %>
