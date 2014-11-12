@@ -3,7 +3,12 @@
 require_dependency File.expand_path('../app/helpers/application_helper.rb', __FILE__)
 require_dependency File.expand_path('../hooks', __FILE__)
 
-Redmine::Plugin.register :quick_edit do
+
+# plugin name depends to plugin directory
+plugin_name = File.dirname(File.expand_path(__FILE__))
+plugin_name = File.basename(plugin_name)
+
+Redmine::Plugin.register plugin_name do
   name 'Quick Edit plugin'
   author 'Akira Saito'
   description 'This plugin provides ability to edit a fields of the issue at the issues page.'
