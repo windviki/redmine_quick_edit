@@ -7,8 +7,12 @@
    end
 
    first_issue = @issues.first
+   first_issue_id = first_issue.id
    if @issues.size > 1
       second_issue = @issues[1]
+      second_issue_id = second_issue.id
+   else
+      second_issue_id = ''
    end
 
    # 可能なら更新後に選択されたチケットに戻り先に設定
@@ -41,7 +45,7 @@
         <% if User.current.allowed_to?(:manage_issue_relations, @project) %>
         <hr>
         <li><%= link_to l(:label_relation_new),
-                        'javascript: quick_edit_show_new_relation_dialog();',
+                        'javascript: quick_edit_show_new_relation_dialog(\''+first_issue_id.to_s+'\',\''+second_issue_id.to_s+'\',\''+URI.encode_www_form_component(back_url)+'\');',
                         :remote => false,
                         :title => l(:label_relation_new),
                         :class => 'icon',
@@ -87,14 +91,11 @@
 
   <% if @issues.size <= 2 %>
   <div id="quick_edit_new_relation_dialog" style="display:none;" title="Quick Edit - <%= l(:label_relation_new) %>">
-    <%
-       issue_to_id = second_issue.nil? ? '' : second_issue.id
-    %>
     <%= form_tag({:controller=>'quick_edit_relations', :action=>:create}) do %>
-      <%= text_field_tag :issue_id, first_issue.id, { :size => 10 } %>
+      <%= text_field_tag :issue_id, '', { :size => 10 } %>
       <%= select :relation, :relation_type, collection_for_relation_type_select, {}, :onchange => "setPredecessorFieldsVisibility();"  %>
-      <%= text_field_tag 'relation[issue_to_id]', issue_to_id, { :size => 10 } %>
-      <%= hidden_field_tag :back_url, back_url %>
+      <%= text_field_tag 'relation[issue_to_id]', '', { :size => 10 } %>
+      <%= hidden_field_tag :back_url, '' %>
       <span id="predecessor_fields" style="display:none;">
       <br><%= l(:field_delay) %>: <%= text_field_tag :delay, '', {:size => 3} %> <%= l(:label_day_plural) %>
       </span><br>
@@ -213,7 +214,10 @@ function quick_edit_input_dialog_ok(){
      .click();
 }
 
-function quick_edit_show_new_relation_dialog(){
+function quick_edit_show_new_relation_dialog(first_issue_id, second_issue_id, back_url){
+  $("#quick_edit_new_relation_dialog > form > #issue_id").val(first_issue_id);
+  $("#quick_edit_new_relation_dialog > form > #relation_issue_to_id").val(second_issue_id);
+  $("#quick_edit_new_relation_dialog > form > #back_url").val(back_url);
   $("#quick_edit_new_relation_dialog").dialog({
      modal: true,
      closeOnEscape: false,
