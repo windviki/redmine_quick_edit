@@ -1,7 +1,7 @@
 #coding: utf-8
 
 module ApplicationHelper
-   def quick_edit_link_to(caption, target_field, field_type, default_value, back_url, disabled)
+   def quick_edit_link_to(bulk_update_url, issue_ids, caption, target_field, field_type, default_value, disabled)
       help_message= l(:text_edit_confirm)
 
       case field_type.to_s
@@ -16,12 +16,14 @@ module ApplicationHelper
 
       pattern = h(pattern.gsub(/\\/,'\\\\\\\\'))
 
-      back_url_encoded = URI.encode_www_form_component(back_url)
+      bulk_update_url_escaped = URI.encode_www_form_component(bulk_update_url)
+
+      issue_ids_js_string = "[" + @issue_ids.join(",") + "]"
 
       sprintf('<li>%s%s</li>',
          context_menu_link(
             h(caption),
-            "javascript:quick_edit_show_input_dialog('#{caption}', '#{target_field}', '#{field_type}', '#{pattern}', '#{help_message}', '#{default_value}', '#{back_url_encoded}')",
+            "javascript:quick_edit_show_input_dialog('#{bulk_update_url_escaped}', #{issue_ids_js_string}, '#{caption}', '#{target_field}', '#{field_type}', '#{pattern}', '#{help_message}', '#{default_value}')",
             :class => 'icon-edit',
             :disabled => disabled
          ),

@@ -21,24 +21,26 @@
    else
      back_url = @back
    end
+
+   bulk_update_url = bulk_update_issues_path(:ids => @issue_ids, :back_url => back_url);
 %>
   <li class="folder">
     <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
     <ul>
-      <%= quick_edit_link_to(l(:field_subject), :subject, :string, first_issue.subject, back_url, !@can[:update]) %>
-      <%= quick_edit_link_to(l(:field_parent_issue), :parent_issue_id, :int, first_issue.parent_id, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(bulk_update_url, @issue_ids, l(:field_subject), :subject, :string, first_issue.subject, !@can[:update]) %>
+      <%= quick_edit_link_to(bulk_update_url, @issue_ids, l(:field_parent_issue), :parent_issue_id, :int, first_issue.parent_id, !@can[:update]) %>
 
 
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('start_date') } %>
-      <%= quick_edit_link_to(l(:field_start_date), :start_date, :date, first_issue.start_date, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(bulk_update_url, @issue_ids, l(:field_start_date), :start_date, :date, first_issue.start_date, !@can[:update]) %>
       <% end %>
 
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('due_date') } %>
-      <%= quick_edit_link_to(l(:field_due_date), :due_date, :date, first_issue.due_date, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(bulk_update_url, @issue_ids, l(:field_due_date), :due_date, :date, first_issue.due_date, !@can[:update]) %>
       <% end %>
 
       <% custom_fields.each do |f| %>
-      <%= quick_edit_link_to(f.name, 'custom_field_values[%d]' % f.id, f.field_format, first_issue.editable_custom_field_values.detect {|v| v.custom_field_id == f.id}, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(bulk_update_url, @issue_ids, f.name, 'custom_field_values[%d]' % f.id, f.field_format, first_issue.editable_custom_field_values.detect {|v| v.custom_field_id == f.id}, !@can[:update]) %>
       <% end %>
 
       <% if @issues.size <= 2  %>
@@ -81,15 +83,15 @@
         <input id="quick_edit_input_dialog_new_date_value" type="text" size="40" style="vertical-align:middle;"></input>
         <%= calendar_for('quick_edit_input_dialog_new_date_value') %>
         </fieldset>
+        <input id="quick_edit_input_dialog_bulk_update_url" type="hidden"></input>
+        <input id="quick_edit_input_dialog_issue_ids" type="hidden"></input>
         <input id="quick_edit_input_dialog_target" type="hidden"></input>
         <input id="quick_edit_input_dialog_field_type" type="hidden"></input>
         <input id="quick_edit_input_dialog_pattern" type="hidden"></input>
-        <input id="quick_edit_input_dialog_back_url" type="hidden"></input>
         <input id="quick_edit_input_dialog_dummy" type="text" style="display:none"></input>
      </form> 
   </div>
 
-  <% if @issues.size <= 2 %>
   <div id="quick_edit_new_relation_dialog" style="display:none;" title="Quick Edit - <%= l(:label_relation_new) %>">
     <%= form_tag({:controller=>'quick_edit_relations', :action=>:create}) do %>
       <%= text_field_tag :issue_id, '', { :size => 10 } %>
@@ -110,7 +112,6 @@
 
     <% end %>
   </div>
-  <% end %>
 
 <script>
 //<![CDATA[
@@ -122,7 +123,7 @@ function quick_edit_get_value_element(field_type) {
   }
 }
 
-function quick_edit_show_input_dialog(field_name,target,field_type,pattern,message,default_value,back_url){
+function quick_edit_show_input_dialog(bulk_update_url,ids,field_name,target,field_type,pattern,message,default_value){
   if (field_type == 'date') {
      $("#quick_edit_input_dialog > form > #text_fields").css("display", "none");
      $("#quick_edit_input_dialog > form > #date_fields").css("display", "block");
@@ -136,11 +137,12 @@ function quick_edit_show_input_dialog(field_name,target,field_type,pattern,messa
   }
 
   $("#quick_edit_input_dialog").attr('title','Quick Edit - ' + field_name);
+  $("#quick_edit_input_dialog_bulk_update_url").val(bulk_update_url);
+  $("#quick_edit_input_dialog_issue_ids").val(ids);
   $("#quick_edit_input_dialog_target").val(target);
   $("#quick_edit_input_dialog_field_type").val(field_type);
   $("#quick_edit_input_dialog_pattern").val(pattern);
   $("#quick_edit_input_dialog_message").html(message);
-  $("#quick_edit_input_dialog_back_url").val(back_url);
   $("#quick_edit_input_dialog").dialog({
      modal: true,
      closeOnEscape: false,
@@ -182,10 +184,10 @@ function quick_edit_input_dialog_ok(){
     }
   }
 
-  <% if @issues.count > 1 %>
+  var issue_ids = $("#quick_edit_input_dialog_issue_ids").val();
+  if(issue_ids.length>1){
      if(!confirm('<%=l(:text_multiple_update_confirm)%>')) return;
-  <% end %>
-
+  }
 
   var additional_index;
   var match = /(.*)\[([0-9]+)\]/.exec(target);
@@ -198,9 +200,7 @@ function quick_edit_input_dialog_ok(){
   }
 
   var bulk_update_html_id = '';
-  var back_url = $("#quick_edit_input_dialog_back_url").val();
-  console.log(back_url);
-  var bulk_update_url =  '<%= bulk_update_issues_path(:ids => @issue_ids)%>&back_url='+encodeURIComponent(back_url);
+  var bulk_update_url = $("#quick_edit_input_dialog_bulk_update_url").val();
   if (additional_index === null) {
       bulk_update_html_id = '#context_edit_update_link_' + target_name;
       bulk_update_url += encodeURI('&issue['+target_name+']='+new_value);
