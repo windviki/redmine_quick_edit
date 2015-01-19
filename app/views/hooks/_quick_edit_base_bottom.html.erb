@@ -1,0 +1,147 @@
+<%
+   extend ApplicationHelper
+%>
+  <div id="quick_edit_input_dialog" style="display:none;" title="Quick Edit">
+     <p id="quick_edit_input_dialog_message"></p>
+     <form>
+        <fieldset id="text_fields" style="border: none; margin:none; padding: none;">
+        <input id="quick_edit_input_dialog_new_value" type="text" size="40" style="vertical-align:middle;"></input>
+        </fieldset>
+        <fieldset id="date_fields" style="border: none; margin:none; padding: none;">
+        <input id="quick_edit_input_dialog_new_date_value" type="text" size="40" style="vertical-align:middle;"></input>
+        <%= calendar_for('quick_edit_input_dialog_new_date_value') %>
+        </fieldset>
+        <input id="quick_edit_input_dialog_bulk_update_url" type="hidden"></input>
+        <input id="quick_edit_input_dialog_issue_ids" type="hidden"></input>
+        <input id="quick_edit_input_dialog_target" type="hidden"></input>
+        <input id="quick_edit_input_dialog_field_type" type="hidden"></input>
+        <input id="quick_edit_input_dialog_pattern" type="hidden"></input>
+        <input id="quick_edit_input_dialog_dummy" type="text" style="display:none"></input>
+     </form> 
+  </div>
+
+<script>
+//<![CDATA[
+function quick_edit_get_value_element(field_type) {
+  if (field_type == 'date') {
+     return $('#quick_edit_input_dialog_new_date_value');
+  } else {
+     return $('#quick_edit_input_dialog_new_value');
+  }
+}
+
+function quick_edit_show_input_dialog(bulk_update_url,ids,field_name,target,field_type,pattern,message,default_value){
+  if (field_type == 'date') {
+     $("#quick_edit_input_dialog > form > #text_fields").css("display", "none");
+     $("#quick_edit_input_dialog > form > #date_fields").css("display", "block");
+  } else {
+     $("#quick_edit_input_dialog > form > #text_fields").css("display", "block");
+     $("#quick_edit_input_dialog > form > #date_fields").css("display", "none");
+  }
+
+  if (default_value) {
+     quick_edit_get_value_element(field_type).val(default_value);
+  }
+
+  $("#quick_edit_input_dialog").attr('title','Quick Edit - ' + field_name);
+  $("#quick_edit_input_dialog_bulk_update_url").val(bulk_update_url);
+  $("#quick_edit_input_dialog_issue_ids").val(ids);
+  $("#quick_edit_input_dialog_target").val(target);
+  $("#quick_edit_input_dialog_field_type").val(field_type);
+  $("#quick_edit_input_dialog_pattern").val(pattern);
+  $("#quick_edit_input_dialog_message").html(message);
+  $("#quick_edit_input_dialog").dialog({
+     modal: true,
+     closeOnEscape: false,
+     width: 500,
+     height: 210,
+     buttons: {
+        "Ok" : quick_edit_input_dialog_ok,
+        "Cancel" : quick_edit_input_dialog_cancel
+     },
+     close: quick_edit_input_dialog_close
+  });
+}
+
+function quick_edit_input_dialog_close(){
+  $("#quick_edit_input_dialog").remove();
+}
+
+function quick_edit_input_dialog_cancel(){
+  $("#quick_edit_input_dialog").dialog("close");
+}
+
+function quick_edit_input_dialog_ok(){
+  var field_type = $("#quick_edit_input_dialog_field_type").val();
+  var new_value = quick_edit_get_value_element(field_type).val();
+  if(new_value === null) return;
+
+  var target = $("#quick_edit_input_dialog_target").val();
+  var pattern = new RegExp($("#quick_edit_input_dialog_pattern").val());
+
+  if(new_value == "") {
+    alert('<%=l(:text_is_required)%>');
+    return;
+
+  } else {
+
+    if(pattern && !pattern.test(new_value)){
+       alert('<%=l(:text_invalid_format)%>');
+       return;
+    }
+  }
+
+  var issue_ids = $("#quick_edit_input_dialog_issue_ids").val();
+  if(issue_ids.length>1){
+     if(!confirm('<%=l(:text_multiple_update_confirm)%>')) return;
+  }
+
+  var additional_index;
+  var match = /(.*)\[([0-9]+)\]/.exec(target);
+  if(match){
+     target_name = match[1];
+     additional_index = match[2];
+  }else{
+     target_name = target;
+     additional_index = null;
+  }
+
+  var bulk_update_html_id = '';
+  var bulk_update_url = $("#quick_edit_input_dialog_bulk_update_url").val();
+  if (additional_index === null) {
+      bulk_update_html_id = '#context_edit_update_link_' + target_name;
+      bulk_update_url += encodeURI('&issue['+target_name+']='+new_value);
+  } else {
+      bulk_update_html_id = '#context_edit_update_link_' + target_name + '_'+additional_index+'_';
+      bulk_update_url += encodeURI('&issue['+target_name+']['+additional_index+']='+new_value);
+  }
+
+  jQuery(bulk_update_html_id)
+     .attr('href',bulk_update_url)
+     .click();
+}
+
+function quick_edit_show_new_relation_dialog(first_issue_id, second_issue_id, back_url){
+  $("#quick_edit_new_relation_dialog > form > #issue_id").val(first_issue_id);
+  $("#quick_edit_new_relation_dialog > form > #relation_issue_to_id").val(second_issue_id);
+  $("#quick_edit_new_relation_dialog > form > #back_url").val(back_url);
+  $("#quick_edit_new_relation_dialog").dialog({
+     modal: true,
+     closeOnEscape: false,
+     width: 450,
+     height: 150,
+     close: quick_edit_new_relation_dialog_close
+  });
+}
+
+function quick_edit_new_relation_dialog_cancel(){
+   $('#quick_edit_new_relation_dialog').dialog("close");
+}
+
+function quick_edit_new_relation_dialog_close(){
+   $('#quick_edit_new_relation_dialog').remove();
+}
+
+//]]>
+</script>
+
