@@ -39,9 +39,7 @@ function quick_edit_show_input_dialog(bulk_update_url,ids,field_name,target,fiel
      $("#quick_edit_input_dialog > form > #date_fields").css("display", "none");
   }
 
-  if (default_value) {
-     quick_edit_get_value_element(field_type).val(default_value);
-  }
+  quick_edit_get_value_element(field_type).val(default_value);
 
   $("#quick_edit_input_dialog").attr('title','Quick Edit - ' + field_name);
   $("#quick_edit_input_dialog_bulk_update_url").val(bulk_update_url);
