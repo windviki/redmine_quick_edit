@@ -22,25 +22,22 @@
      back_url = @back
    end
 
-   bulk_update_url = bulk_update_issues_path(:ids => @issue_ids, :back_url => back_url);
 %>
   <li class="folder">
     <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
     <ul>
-      <%= quick_edit_link_to(bulk_update_url, @issue_ids, l(:field_subject), :subject, :string, first_issue.subject, !@can[:update]) %>
-      <%= quick_edit_link_to(bulk_update_url, @issue_ids, l(:field_parent_issue), :parent_issue_id, :int, first_issue.parent_id, !@can[:update]) %>
-
-
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:subject), :subject, nil, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:parent_issue_id), :parent_issue_id, nil, back_url, !@can[:update]) %>
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('start_date') } %>
-      <%= quick_edit_link_to(bulk_update_url, @issue_ids, l(:field_start_date), :start_date, :date, first_issue.start_date, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:start_date), :start_date, nil, back_url, !@can[:update]) %>
       <% end %>
 
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('due_date') } %>
-      <%= quick_edit_link_to(bulk_update_url, @issue_ids, l(:field_due_date), :due_date, :date, first_issue.due_date, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:due_date), :due_date, nil, back_url, !@can[:update]) %>
       <% end %>
 
       <% custom_fields.each do |f| %>
-      <%= quick_edit_link_to(bulk_update_url, @issue_ids, f.name, 'custom_field_values[%d]' % f.id, f.field_format, first_issue.editable_custom_field_values.detect {|v| v.custom_field_id == f.id}, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, f.name, 'custom_field_values', f.id, back_url, !@can[:update]) %>
       <% end %>
 
       <% if @issues.size <= 2  %>

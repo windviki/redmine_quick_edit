@@ -8,5 +8,7 @@ RedmineApp::Application.routes.draw do
       resources :quick_edit_relations, :controller => 'quick_edit_relations', :only => [:create, :destroy]
     end
   end
+
+  get 'quick_edit_issues/edit', :controller => 'quick_edit_issues', :action => 'edit'
 end
 

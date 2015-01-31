@@ -1,40 +1,73 @@
 #coding: utf-8
 
 module ApplicationHelper
-   def quick_edit_link_to(bulk_update_url, issue_ids, caption, target_field, field_type, default_value, disabled)
-      help_message= l(:text_edit_confirm)
+  def quick_edit_link_to(issue_ids, caption, attribute_name, additional_index, back_url, disabled)
+     target_specifier = build_target_specifier(attribute_name, additional_index)
 
-      case field_type.to_s
-      when "string", "text"
-         pattern = ''
-      when "int"
-         pattern = '\d+'
-      when "date"
-         pattern = '\d{4}-\d{2}-\d{2}'
-         help_message += " (yyyy-mm-dd)"
-      end
+     ajax_url = quick_edit_issues_edit_path(:ids => issue_ids, :target_specifier => target_specifier, :back_url => back_url)
 
-      pattern = h(pattern.gsub(/\\/,'\\\\\\\\'))
+     sprintf('<li>%s</li>',
+        context_menu_link(
+           h(caption),
+           ajax_url,
+           :class => 'icon-edit',
+           :disabled => disabled,
+           :remote => true
+        )
+     ).html_safe()
+  end   
 
-      bulk_update_url_escaped = URI.encode_www_form_component(bulk_update_url)
+  def build_target_specifier(attribute_name, additional_index)
+    target = "issue[#{attribute_name}]"
+    target += "[#{additional_index}]" unless additional_index.nil?
+    target
+  end
 
-      issue_ids_js_string = "[" + @issue_ids.join(",") + "]"
+  def parse_target_specifier(target_specifier)
+    /^issue\[(.+?)\].*/ =~ target_specifier
+    if Regexp.last_match.nil?
+      return nil
+    end
 
-      sprintf('<li>%s%s</li>',
-         context_menu_link(
-            h(caption),
-            "javascript:quick_edit_show_input_dialog('#{bulk_update_url_escaped}', #{issue_ids_js_string}, '#{caption}', '#{target_field}', '#{field_type}', '#{pattern}', '#{help_message}', '#{default_value}')",
-            :class => 'icon-edit',
-            :disabled => disabled
-         ),
-         context_menu_link(
-            h(:dummy),
-            '#',
-            :id => 'context_edit_update_link_%s' % target_field.to_s().tr('[]','__'),
-            :style=>'display:none',
-            :method => :post,
-         )
-      ).html_safe()
-   end   
+    attribute_name = Regexp.last_match(1)
+
+    /^issue\[.+?\]\[(\d+)\]$/ =~ target_specifier
+    if Regexp.last_match.nil?
+      additional_index = nil
+      result = [attribute_name]
+    else
+      additional_index = Regexp.last_match(1)
+      result = [attribute_name, additional_index]
+    end
+
+    result
+  end
+
+  def get_attribute_caption(attribute_name)
+     case attribute_name.to_sym
+     when :subject
+        l(:field_subject)
+     when :parent_issue_id
+        l(:field_parent_issue)
+     when :start_date
+        l(:field_start_date)
+     when :due_date
+        l(:field_due_date)
+     end
+  end
+
+
+  def get_attribute_type(attribute_name)
+     case attribute_name.to_sym
+     when :subject
+        :string
+     when :parent_issue_id
+        :int
+     when :start_date
+        :date
+     when :due_date
+        :date
+     end
+  end
 end
 
