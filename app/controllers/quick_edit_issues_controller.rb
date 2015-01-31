@@ -47,18 +47,6 @@ private
     end
   end
 
-#  def get_input_dialog_base_params(issue, target_specifier)
-#    issue.available_custom_fields.each do |f|
-#      custom_field_name = 'issue[custom_field_values][%d]' % f.id
-#      if custom_field_name == target_specifier
-#        return get_input_dialog_params_for_custom_fields(issue, target_specifier, f)
-#      end
-#    end
-#
-#    v = get_input_dialog_params_for_core_fields(issue, target_specifier)
-#    v
-#  end
-#
   def get_input_dialog_params_for_core_fields(issue, target_specifier)
     attribute_name = parse_target_specifier(target_specifier)[0]
 
@@ -68,7 +56,6 @@ private
     default_value = "" if default_value.nil?
     validation_pattern = get_field_validation_pattern(field_type)
     help_message = get_field_help_message(field_type)
-
     ret =
       { :caption => caption,
         :target_specifier => target_specifier,
@@ -81,7 +68,7 @@ private
 
   def get_input_dialog_params_for_custom_fields(issue, target_specifier, custom_field)
     caption = custom_field.name
-    field_type = custom_field.field_format
+    field_type = custom_field.field_format.to_sym
     default_value = issue.editable_custom_field_values.detect {|v| v.custom_field_id == custom_field.id}
     default_value = "" if default_value.nil?
     validation_pattern = get_field_validation_pattern(field_type)

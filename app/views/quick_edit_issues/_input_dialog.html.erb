@@ -2,7 +2,7 @@
    <p><%= @dialog_params[:help_message] %></p>
    <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
       <% case @dialog_params[:field_type] %>
-      <% when "date" %>
+      <% when :date %>
       <input id="new_value"
              name="<%= @dialog_params[:target_specifier] %>"
              type="text" 
