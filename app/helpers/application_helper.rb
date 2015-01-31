@@ -47,6 +47,8 @@ module ApplicationHelper
      case attribute_name.to_sym
      when :subject
         l(:field_subject)
+     when :description
+        l(:field_description)
      when :parent_issue_id
         l(:field_parent_issue)
      when :start_date
@@ -61,6 +63,8 @@ module ApplicationHelper
      case attribute_name.to_sym
      when :subject
         :string
+     when :description
+        :text
      when :parent_issue_id
         :int
      when :start_date

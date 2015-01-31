@@ -101,6 +101,8 @@ private
      case field_type.to_sym
      when :string
         pattern = ''
+     when :text
+        pattern = ''
      when :int
         pattern = '\d+'
      when :date

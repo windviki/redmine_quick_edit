@@ -10,6 +10,13 @@
              style="vertical-align:middle;"
              value="<%= @dialog_params[:default_value] %>"></input>
       <%= calendar_for('new_value') %>
+      <% when :text %>
+      <textarea id="new_value"
+             name="<%= @dialog_params[:target_specifier] %>"
+             cols="40"
+             rows="10"
+             style="vertical-align:middle;"><%= @dialog_params[:default_value] %></textarea>
+      <%= wikitoolbar_for 'new_value' %>
       <% else %>
       <input id="new_value"
              name="<%= @dialog_params[:target_specifier] %>"
@@ -28,7 +35,7 @@
 
 <script>
 //<![CDATA[
-  var height = 210;
+  var height = <%= (@dialog_params[:field_type] == :text) ? 360 : 210 %>;
   $("#quick_edit_input_dialog").dialog({
      modal: true,
      closeOnEscape: false,

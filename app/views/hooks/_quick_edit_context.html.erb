@@ -27,6 +27,7 @@
     <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
     <ul>
       <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:subject), :subject, nil, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:description), :description, nil, back_url, !@can[:update]) %>
       <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:parent_issue_id), :parent_issue_id, nil, back_url, !@can[:update]) %>
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('start_date') } %>
       <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:start_date), :start_date, nil, back_url, !@can[:update]) %>
