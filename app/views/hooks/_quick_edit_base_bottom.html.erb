@@ -1,7 +1,52 @@
 <div id="quick_edit_input_dialogs"></div>
-
+<div id="cursor" style="border: 1px dotted gray; position: absolute; display: none; opacity: 0.5;">&nbsp;</div>
 <script>
 //<![CDATA[
+
+$("tr.issue").draggable({
+  cursor: "move",
+  start: function (event, ui) {
+    var ids = quick_edit_get_selections();
+    if (ids.length == 0) return;
+    
+    drag_element = $(this);
+    $("#cursor").css( {
+      "top": drag_element.css("top"),
+      "left": $("#content").css("padding-left"),
+      "width": drag_element.css("width"),
+      "height": drag_element.css("height"),
+      "background-color": drag_element.css("background-color"),
+      "display": "block"});
+  },
+  stop: function (event, ui) { $("#cursor").css({"display": "none"}); },
+  drag: function (event, ui) { $("#cursor").css({"top": event.pageY}); }
+});
+
+$("tr.issue").droppable({
+  drop: function (event, ui) {
+    var update_ids = quick_edit_get_selections();
+    if (update_ids.length == 0) return;
+
+    var id = $(this).attr("id");
+    var new_parent_id = /issue-(.*)/.exec(id)[1];
+    $.ajax({
+      url: '<%= quick_edit_issues_edit_path() %>?' + update_ids.join("&") + '&target_specifier=issue[parent_issue_id]&default_value='+new_parent_id,
+      dataType: "script",
+      success : function (html) { $("#quick_edit_dialogs").html(html); }
+    });
+  }
+});
+
+function quick_edit_get_selections() {
+    var ids = [];
+    $(".context-menu-selection").each(function (index,element) {
+      var id = $(element).attr("id");
+      var m = /issue-(.*)/.exec(id);
+      ids.push("ids[]="+m[1]);
+    });
+    return ids;
+}
+
 function quick_edit_input_dialog_close(){
   $("#quick_edit_input_dialog").remove();
 }

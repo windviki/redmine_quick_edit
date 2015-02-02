@@ -18,6 +18,7 @@ class QuickEditIssuesController < ApplicationController
 
     @dialog_params[:issue_ids] = params[:ids]
     @dialog_params[:back_url] = params[:back_url]
+    @dialog_params[:default_value] = params[:default_value] unless (params[:default_value].nil?)
   end
 
 private
