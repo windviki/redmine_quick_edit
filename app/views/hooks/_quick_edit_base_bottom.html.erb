@@ -55,7 +55,7 @@ function quick_edit_input_dialog_cancel(){
   $("#quick_edit_input_dialog").dialog("close");
 }
 
-function quick_edit_input_dialog_ok(){
+function quick_edit_input_dialog_submit(){
   var new_value = $("#quick_edit_input_dialog > form > #new_value").val();
   if(new_value === null) return;
 
