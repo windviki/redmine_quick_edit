@@ -2,7 +2,7 @@
 <div id="cursor" style="border: 1px dotted gray; position: absolute; display: none; opacity: 0.5;">&nbsp;</div>
 <script>
 //<![CDATA[
-var offsetY = /[\?&]offsetY=(\d+)[$&]/g.exec(location.href);
+var offsetY = /[?&]offsetY=(\d+).*/g.exec(location.href);
 if (offsetY) {
   window.scrollTo(0, offsetY[1]);
 }
