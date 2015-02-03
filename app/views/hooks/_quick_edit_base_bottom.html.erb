@@ -75,7 +75,10 @@ function quick_edit_input_dialog_submit(){
     }
   }
 
-  var issue_ids = $("#quick_edit_input_dialog > form > #ids").val();
+  var issue_ids = [];
+  $("#quick_edit_input_dialog > form > #ids").each(function (index,element) {
+    issue_ids.push($(this).val());
+  });
   if(issue_ids.length>1){
      if(!confirm('<%=l(:text_multiple_update_confirm)%>')) return;
   }
