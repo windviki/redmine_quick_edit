@@ -2,6 +2,11 @@
 <div id="cursor" style="border: 1px dotted gray; position: absolute; display: none; opacity: 0.5;">&nbsp;</div>
 <script>
 //<![CDATA[
+var offsetY = /[\?&]offsetY=(\d+)[$&]/g.exec(location.href);
+if (offsetY) {
+  window.scrollTo(0, offsetY[1]);
+}
+
 $("tr.issue").draggable({
   cursor: "move",
   start: function (event, ui) {
@@ -82,6 +87,15 @@ function quick_edit_input_dialog_submit(){
   if(issue_ids.length>1){
      if(!confirm('<%=l(:text_multiple_update_confirm)%>')) return;
   }
+
+  var offsetY = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+  var back_url = $("#quick_edit_input_dialog > form > #back_url").val();
+  if (back_url.indexOf("?") == -1) {
+    back_url = back_url + "?offsetY=" + offsetY;
+  } else {
+    back_url = back_url + "&offsetY=" + offsetY;
+  }
+  $("#quick_edit_input_dialog > form > #back_url").val(back_url);
 
   $("#quick_edit_input_dialog > form").submit();
 }
