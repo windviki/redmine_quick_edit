@@ -2,14 +2,14 @@
 <div id="cursor" style="border: 1px dotted gray; position: absolute; display: none; opacity: 0.5;">&nbsp;</div>
 <script>
 //<![CDATA[
-
 $("tr.issue").draggable({
   cursor: "move",
   start: function (event, ui) {
-    var ids = quick_edit_get_selections();
-    if (ids.length == 0) return;
-    
     drag_element = $(this);
+    if (!drag_element.hasClass("context-menu-selection")) {
+      drag_element.addClass("context-menu-selection");
+    }
+
     $("#cursor").css( {
       "top": drag_element.css("top"),
       "left": $("#content").css("padding-left"),
@@ -25,10 +25,7 @@ $("tr.issue").draggable({
 $("tr.issue").droppable({
   drop: function (event, ui) {
     var update_ids = quick_edit_get_selections();
-    if (update_ids.length == 0) return;
-
-    var id = $(this).attr("id");
-    var new_parent_id = /issue-(.*)/.exec(id)[1];
+    var new_parent_id = quick_edit_get_issue_id_from_element(this);
     $.ajax({
       url: '<%= quick_edit_issues_edit_path() %>?' + update_ids.join("&") + '&target_specifier=issue[parent_issue_id]&default_value='+new_parent_id,
       dataType: "script",
@@ -40,11 +37,16 @@ $("tr.issue").droppable({
 function quick_edit_get_selections() {
     var ids = [];
     $(".context-menu-selection").each(function (index,element) {
-      var id = $(element).attr("id");
-      var m = /issue-(.*)/.exec(id);
-      ids.push("ids[]="+m[1]);
+      var id = quick_edit_get_issue_id_from_element(element);
+      ids.push("ids[]="+id);
     });
     return ids;
+}
+
+function quick_edit_get_issue_id_from_element(element) {
+  var id = $(element).attr("id");
+  var m = /issue-(.*)/.exec(id);
+  return m[1];
 }
 
 function quick_edit_input_dialog_close(){
