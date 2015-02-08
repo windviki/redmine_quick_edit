@@ -9,7 +9,7 @@ INSTALL:
 
   examples)
   cd redmine/plugins/
-  git clone git://git.sourceforge.jp/gitroot/quickedit/quickedit.git
+  tar zxvf quick_edit.N.N.N.tgz
 
 - Restart your redmine.
 
