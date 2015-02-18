@@ -1,45 +1,64 @@
-<div id="quick_edit_input_dialog" title="Quick Edit - <%= @dialog_params[:caption] %>">
-   <p><%= @dialog_params[:help_message] %></p>
-   <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
-      <% case @dialog_params[:field_type] %>
-      <% when :date %>
-      <input id="new_value"
-             name="<%= @dialog_params[:target_specifier] %>"
-             type="text" 
-             size="60"
-             style="vertical-align:middle;"
-             value="<%= @dialog_params[:default_value] %>"></input>
-      <%= calendar_for('new_value') %>
-      <% when :text %>
-      <textarea id="new_value"
-             name="<%= @dialog_params[:target_specifier] %>"
-             cols="60"
-             rows="10"
-             style="vertical-align:middle;"><%= @dialog_params[:default_value] %></textarea>
-      <%= wikitoolbar_for 'new_value' %>
-      <% else %>
-      <input id="new_value"
-             name="<%= @dialog_params[:target_specifier] %>"
-             type="text"
-             size="60"
-             style="vertical-align:middle;"
-             value="<%= @dialog_params[:default_value] %>"></input>
+<div id="quick_edit_input_dialog" title="Quick Edit - <%= @dialog_params[:caption] %>" style="background-color: white;">
+  <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
+  <div style="padding-top: 9px; padding-bottom: 15px; padding-left: 10px;">
+    <span style="vertical-align: middle; font-size: 1em;"><%= @dialog_params[:help_message] %></span><br>
+    <span style="vertical-align: middle; font-size: 0.85em;">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
+  </div>
+  <div class="box" style="font-size: 0.9em; font-weight: normal; padding-left: 10px; padding-bottom: 12px; margin-bottom:0px;">
+  <div>
+    <span><%= @dialog_params[:caption] %>:</span></div>
+    <% case @dialog_params[:field_type] %>
+    <% when :date %>
+    <input id="new_value"
+           name="<%= @dialog_params[:target_specifier] %>"
+           type="text" 
+           size="15"
+           value="<%= @dialog_params[:default_value] %>"></input>
+    <%= calendar_for('new_value') %>
+    <% when :int %>
+    <input id="new_value"
+           name="<%= @dialog_params[:target_specifier] %>"
+           type="text" 
+           size="15"
+           value="<%= @dialog_params[:default_value] %>"></input>
+      <% if @dialog_params[:target_specifier] == "issue[parent_issue_id]" %>
+      <%= javascript_tag "observeAutocompleteField('new_value', '#{escape_javascript auto_complete_issues_path(:project_id => @issue.project, :scope => (Setting.cross_project_issue_relations? ? 'all' : nil))}')" %>
+      <%= javascript_tag "setPredecessorFieldsVisibility();" %>
       <% end %>
-      <% @dialog_params[:issue_ids].each do |id| %>
-      <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
-      <% end %>
-      <input id="back_url" name="back_url" type="hidden" value="<%= @dialog_params[:back_url] %>"></input>
-      <input id="validation_pattern" type="hidden" value="<%= @dialog_params[:validation_pattern] %>"></input>
-   <% end %>
+    <% when :text %>
+    <textarea id="new_value"
+           name="<%= @dialog_params[:target_specifier] %>"
+           cols="80"
+           rows="10"
+           style="vertical-align:middle;"><%= @dialog_params[:default_value] %></textarea>
+    <%= wikitoolbar_for 'new_value' %>
+    <% else %>
+    <input id="new_value"
+           name="<%= @dialog_params[:target_specifier] %>"
+           type="text"
+           size="70"
+           value="<%= @dialog_params[:default_value] %>"></input>
+    <% end %>
+    <% @dialog_params[:issue_ids].each do |id| %>
+    <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
+    <% end %>
+    <input id="back_url" name="back_url" type="hidden" value="<%= @dialog_params[:back_url] %>"></input>
+    <input id="validation_pattern" type="hidden" value="<%= @dialog_params[:validation_pattern] %>"></input>
+  </div>
+  <div style="color:#a0a0a0; text-align: right; margin-top: 3px; padding-top: 12px; line-height: 1.0em;">
+    <span>QUICK EDIT</span><br>
+    <span style="font-size: 9px;">http://sourceforge.jp/projects/quickedit/</span></div>
+  <% end %>
 </div>
 
 <script>
 //<![CDATA[
-  var height = <%= (@dialog_params[:field_type] == :text) ? 360 : 210 %>;
+  var width = <%= (@dialog_params[:field_type] == :int || @dialog_params[:field_type] == :date) ? 480 : 707 %>;
+  var height = <%= (@dialog_params[:field_type] == :text) ? 450 : 275 %>;
   $("#quick_edit_input_dialog").dialog({
      modal: true,
      closeOnEscape: false,
-     width: 600,
+     width: width,
      height: height,
      buttons: {
         "Submit" : quick_edit_input_dialog_submit,
