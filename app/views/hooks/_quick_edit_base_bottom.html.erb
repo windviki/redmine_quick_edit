@@ -65,10 +65,10 @@ function quick_edit_input_dialog_cancel(){
 }
 
 function quick_edit_input_dialog_submit(){
-  var new_value = $("#quick_edit_input_dialog > form > #new_value").val();
+  var new_value = $("#quick_edit_input_dialog > form > div > #new_value").val();
   if(new_value === null) return;
 
-  var pattern = new RegExp($("#quick_edit_input_dialog > form > #validation_pattern").val());
+  var pattern = new RegExp($("#quick_edit_input_dialog > form > div > #validation_pattern").val());
 
   if(new_value == "") {
     alert('<%=l(:text_is_required)%>');
@@ -83,7 +83,7 @@ function quick_edit_input_dialog_submit(){
   }
 
   var issue_ids = [];
-  $("#quick_edit_input_dialog > form > #ids").each(function (index,element) {
+  $("#quick_edit_input_dialog > form > div > #ids").each(function (index,element) {
     issue_ids.push($(this).val());
   });
   if(issue_ids.length>1){
@@ -91,13 +91,13 @@ function quick_edit_input_dialog_submit(){
   }
 
   var offsetY = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-  var back_url = $("#quick_edit_input_dialog > form > #back_url").val();
+  var back_url = $("#quick_edit_input_dialog > form > div > #back_url").val();
   if (back_url.indexOf("?") == -1) {
     back_url = back_url + "?offsetY=" + offsetY;
   } else {
     back_url = back_url + "&offsetY=" + offsetY;
   }
-  $("#quick_edit_input_dialog > form > #back_url").val(back_url);
+  $("#quick_edit_input_dialog > form > div > #back_url").val(back_url);
 
   $("#quick_edit_input_dialog > form").submit();
 }
