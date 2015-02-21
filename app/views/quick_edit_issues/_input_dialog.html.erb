@@ -53,6 +53,7 @@
 
 <script>
 //<![CDATA[
+  $(".ui-autocomplete").css("z-index",200);
   var width = <%= (@dialog_params[:field_type] == :int || @dialog_params[:field_type] == :date) ? 480 : 707 %>;
   var height = <%= (@dialog_params[:field_type] == :text) ? 450 : 275 %>;
   $("#quick_edit_input_dialog").dialog({
