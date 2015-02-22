@@ -31,7 +31,9 @@
            cols="80"
            rows="10"
            style="vertical-align:middle;"><%= @dialog_params[:default_value] %></textarea>
+    <% if @dialog_params[:attribute_name].to_sym == :description %>
     <%= wikitoolbar_for 'new_value' %>
+    <% end %>
     <% else %>
     <input id="new_value"
            name="<%= @dialog_params[:target_specifier] %>"
@@ -56,9 +58,11 @@
 
 <script>
 //<![CDATA[
+  <%
+  %>
   $(".ui-autocomplete").css("z-index",200);
   var width = <%= (@dialog_params[:field_type] == :int || @dialog_params[:field_type] == :date) ? 480 : 707 %>;
-  var height = <%= ((@dialog_params[:field_type] == :text) ? 445 : 280) + ((@dialog_params[:description].nil?) ? 0 : 50) %>;
+  var height = <%= ((@dialog_params[:field_type] == :text) ? 414 : 280) + ((@dialog_params[:description].nil?) ? 0 : 50) + ((@dialog_params[:attribute_name]==:description)?31:0)%>;
   $("#quick_edit_input_dialog").dialog({
      modal: true,
      closeOnEscape: false,

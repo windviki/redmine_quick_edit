@@ -3,7 +3,7 @@
    extend IssueRelationsHelper
    custom_fields = @issues.map(&:available_custom_fields).reduce(:&).select do |f|
      #concat f.field_format
-     %w(string date int).include?(f.field_format)
+     %w(string date int text).include?(f.field_format)
    end
 
    first_issue = @issues.first

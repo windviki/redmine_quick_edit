@@ -60,7 +60,8 @@ private
     validation_pattern = get_field_validation_pattern(field_type)
     help_message = get_field_help_message(field_type)
     ret =
-      { :caption => caption,
+      { :attribute_name => attribute_name.to_sym,
+        :caption => caption,
         :target_specifier => target_specifier,
         :field_type => field_type,
         :default_value => default_value,
@@ -70,6 +71,8 @@ private
   end
 
   def get_input_dialog_params_for_custom_fields(issue, target_specifier, custom_field)
+    attribute_name = parse_target_specifier(target_specifier)[0]
+
     caption = custom_field.name
     field_type = custom_field.field_format.to_sym
     default_value = issue.editable_custom_field_values.detect {|v| v.custom_field_id == custom_field.id}
@@ -78,7 +81,8 @@ private
     help_message = get_field_help_message(field_type)
 
     ret =
-      { :caption => caption,
+      { :attribute_name => attribute_name.to_sym,
+        :caption => caption,
         :target_specifier => target_specifier,
         :field_type => field_type,
         :default_value => default_value,
