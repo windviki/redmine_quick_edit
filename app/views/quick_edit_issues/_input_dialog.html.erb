@@ -4,7 +4,7 @@
     <span style="vertical-align: middle; font-size: 1em;"><%= @dialog_params[:help_message] %></span><br>
     <span style="vertical-align: middle; font-size: 0.85em;">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
   </div>
-  <div class="box" style="font-size: 0.9em; font-weight: normal; padding-left: 10px; padding-bottom: 12px; margin-bottom:0px;">
+  <div class="box" style="font-size: 0.9em; font-weight: normal; padding-left: 10px; padding-right: 10px; padding-bottom: 12px; margin-bottom:0px;">
   <div>
     <span><%= @dialog_params[:caption] %>:</span></div>
     <% case @dialog_params[:field_type] %>
