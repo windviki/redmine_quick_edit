@@ -9,37 +9,41 @@ if (offsetY) {
   window.scrollTo(0, offsetY[1]);
 }
 
-$("tr.issue").draggable({
-  cursor: "move",
-  start: function (event, ui) {
-    drag_element = $(this);
-    if (!drag_element.hasClass("context-menu-selection")) {
-      drag_element.addClass("context-menu-selection");
+if ($("body").hasClass("controller-issues action-index")) {
+  $("tr.issue").draggable({
+    cursor: "move",
+    start: function (event, ui) {
+      drag_element = $(this);
+      if (!drag_element.hasClass("context-menu-selection")) {
+        drag_element.addClass("context-menu-selection");
+      }
+  
+      $("#cursor").css( {
+        "top": drag_element.css("top"),
+        "left": $("#content").css("padding-left"),
+        "width": drag_element.css("width"),
+        "height": drag_element.css("height"),
+        "background-color": drag_element.css("background-color"),
+        "display": "block"});
+    },
+    stop: function (event, ui) { $("#cursor").css({"display": "none"}); },
+    drag: function (event, ui) { $("#cursor").css({"top": event.pageY}); }
+  });
+
+  $("tr.issue").droppable({
+    drop: function (event, ui) {
+      var update_ids = quick_edit_get_selections();
+      var new_parent_id = quick_edit_get_issue_id_from_element(this);
+      if (!new_parent_id) return;
+  
+      $.ajax({
+        url: '<%= quick_edit_issues_edit_path() %>?' + update_ids.join("&") + '&target_specifier=issue[parent_issue_id]&default_value='+new_parent_id,
+        dataType: "script",
+        success : function (html) { $("#quick_edit_dialogs").html(html); }
+      });
     }
-
-    $("#cursor").css( {
-      "top": drag_element.css("top"),
-      "left": $("#content").css("padding-left"),
-      "width": drag_element.css("width"),
-      "height": drag_element.css("height"),
-      "background-color": drag_element.css("background-color"),
-      "display": "block"});
-  },
-  stop: function (event, ui) { $("#cursor").css({"display": "none"}); },
-  drag: function (event, ui) { $("#cursor").css({"top": event.pageY}); }
-});
-
-$("tr.issue").droppable({
-  drop: function (event, ui) {
-    var update_ids = quick_edit_get_selections();
-    var new_parent_id = quick_edit_get_issue_id_from_element(this);
-    $.ajax({
-      url: '<%= quick_edit_issues_edit_path() %>?' + update_ids.join("&") + '&target_specifier=issue[parent_issue_id]&default_value='+new_parent_id,
-      dataType: "script",
-      success : function (html) { $("#quick_edit_dialogs").html(html); }
-    });
-  }
-});
+  });
+}
 
 function quick_edit_get_selections() {
     var ids = [];
