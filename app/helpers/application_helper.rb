@@ -1,6 +1,18 @@
 #coding: utf-8
 
 module ApplicationHelper
+  def redmine_version()
+    Redmine::VERSION::MAJOR * 10 + Redmine::VERSION::MINOR
+  end
+
+  def editable(attribute_name, can)
+    if redmine_version() >= 30
+      return can[:edit]
+    else
+      return can[:update]
+    end
+  end
+
   def quick_edit_link_to(issue_ids, caption, attribute_name, additional_index, back_url, disabled)
      target_specifier = build_target_specifier(attribute_name, additional_index)
 

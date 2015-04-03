@@ -26,19 +26,19 @@
   <li class="folder">
     <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
     <ul>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:subject), :subject, nil, back_url, !@can[:update]) %>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:description), :description, nil, back_url, !@can[:update]) %>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:parent_issue_id), :parent_issue_id, nil, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:subject), :subject, nil, back_url, !editable(:subject,@can)) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:description), :description, nil, back_url, !editable(:subject,@can)) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:parent_issue_id), :parent_issue_id, nil, back_url, !editable(:subject,@can)) %>
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('start_date') } %>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:start_date), :start_date, nil, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:start_date), :start_date, nil, back_url, !editable(:subject,@can)) %>
       <% end %>
 
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('due_date') } %>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:due_date), :due_date, nil, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:due_date), :due_date, nil, back_url, !editable(:subject,@can)) %>
       <% end %>
 
       <% custom_fields.each do |f| %>
-      <%= quick_edit_link_to(@issue_ids, f.name, 'custom_field_values', f.id, back_url, !@can[:update]) %>
+      <%= quick_edit_link_to(@issue_ids, f.name, 'custom_field_values', f.id, back_url, !editable(:subject,@can)) %>
       <% end %>
 
       <% if @issues.size <= 2  %>
