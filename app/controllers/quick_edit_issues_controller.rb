@@ -10,7 +10,7 @@ class QuickEditIssuesController < ApplicationController
       custom_field_name = 'issue[custom_field_values][%d]' % f.id
       if custom_field_name == @target_specifier
         @dialog_params = get_input_dialog_params_for_custom_fields(@issue, @target_specifier, f)
-        @dialog_params[:description] = f.description.presence if f.attributes().has_key?(:description)
+        @dialog_params[:description] = f.description.presence if f.attributes().has_key?('description')
       end
     end
     if @dialog_params.nil?
