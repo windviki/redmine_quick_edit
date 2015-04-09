@@ -99,6 +99,8 @@ private
         pattern = ''
      when :int
         pattern = '\d+'
+     when :float
+        pattern = '^[+-]?(\d+|\d*\.\d+|\d+\.\d+)($|[eE][+-]?\d+$)'
      when :date
         pattern = '\d{4}-\d{2}-\d{2}'
      end
