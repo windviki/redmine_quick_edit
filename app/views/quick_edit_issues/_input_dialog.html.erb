@@ -58,8 +58,6 @@
 
 <script>
 //<![CDATA[
-  <%
-  %>
   $(".ui-autocomplete").css("z-index",200);
   var width = <%= (@dialog_params[:field_type] == :int || @dialog_params[:field_type] == :date) ? 480 : 707 %>;
   var height = <%= ((@dialog_params[:field_type] == :text) ? 414 : 280) + ((@dialog_params[:description].nil?) ? 0 : 50) + ((@dialog_params[:attribute_name]==:description)?31:0)%>;
@@ -72,7 +70,10 @@
         "Submit" : quick_edit_input_dialog_submit,
         "Cancel" : quick_edit_input_dialog_cancel
      },
+     open: quick_edit_input_dialog_open,
      close: quick_edit_input_dialog_close
   });
+
+  quick_edit_log("input_dialog open.");
 //]]>
 </script>

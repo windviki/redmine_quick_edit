@@ -4,45 +4,83 @@
 </div>
 <script>
 //<![CDATA[
+function quick_edit_log(message){
+  if(typeof console !== "undefined" && typeof console.log !=="undefined")
+    console.log("quick_edit: "+message);
+}
+
+
 var offsetY = /[?&]offsetY=(\d+).*/g.exec(location.href);
 if (offsetY) {
   window.scrollTo(0, offsetY[1]);
 }
 
-if ($("body").hasClass("controller-issues action-index")) {
-  $("tr.issue").draggable({
-    cursor: "move",
-    start: function (event, ui) {
-      drag_element = $(this);
-      if (!drag_element.hasClass("context-menu-selection")) {
-        drag_element.addClass("context-menu-selection");
-      }
-  
-      $("#cursor").css( {
-        "top": drag_element.css("top"),
-        "left": $("#content").css("padding-left"),
-        "width": drag_element.css("width"),
-        "height": drag_element.css("height"),
-        "background-color": drag_element.css("background-color"),
-        "display": "block"});
-    },
-    stop: function (event, ui) { $("#cursor").css({"display": "none"}); },
-    drag: function (event, ui) { $("#cursor").css({"top": event.pageY}); }
-  });
+quick_edit_drag_and_drop_init();
 
-  $("tr.issue").droppable({
-    drop: function (event, ui) {
-      var update_ids = quick_edit_get_selections();
-      var new_parent_id = quick_edit_get_issue_id_from_element(this);
-      if (!new_parent_id) return;
+function quick_edit_drag_and_drop_init() {
+  if ($("body").hasClass("controller-issues action-index")) {
+    $("tr.issue").draggable({
+      cursor: "move",
+      start: function (event, ui) {
+        drag_element = $(this);
+        if (!drag_element.hasClass("context-menu-selection")) {
+          drag_element.addClass("context-menu-selection");
+        }
+    
+        $("#cursor").css( {
+          "top": drag_element.css("top"),
+          "left": $("#content").css("padding-left"),
+          "width": drag_element.css("width"),
+          "height": drag_element.css("height"),
+          "background-color": drag_element.css("background-color"),
+          "display": "block"});
+      },
+      stop: function (event, ui) { $("#cursor").css({"display": "none"}); },
+      drag: function (event, ui) { $("#cursor").css({"top": event.pageY}); }
+    });
   
-      $.ajax({
-        url: '<%= quick_edit_issues_edit_path() %>?' + update_ids.join("&") + '&target_specifier=issue[parent_issue_id]&default_value='+new_parent_id,
-        dataType: "script",
-        success : function (html) { $("#quick_edit_dialogs").html(html); }
-      });
+    $("tr.issue").droppable({
+      drop: function (event, ui) {
+        var update_ids = quick_edit_get_selections();
+        var new_parent_id = quick_edit_get_issue_id_from_element(this);
+        if (!new_parent_id) return;
+
+        $.ajax({
+          url: '<%= quick_edit_issues_edit_path() %>?' + update_ids.join("&") + '&target_specifier=issue[parent_issue_id]&default_value='+new_parent_id,
+          dataType: "script",
+          success : function (html) { $("#quick_edit_dialogs").html(html); }
+        });
+      }
+    });
+  }
+}
+
+function quick_edit_drag_and_drop_enable(){
+  $("tr.issue").each( function () {
+    var issue = $(this);
+    if (issue.draggable) {
+      issue.draggable("enable");
+    }
+    if (issue.droppable) {
+      issue.droppable("enable");
     }
   });
+
+  quick_edit_log("issue d&d enabled.");
+}
+
+function quick_edit_drag_and_drop_disable(){
+  $("tr.issue").each( function () {
+    var issue = $(this);
+    if (issue.draggable) {
+      issue.draggable("disable");
+    }
+    if (issue.droppable) {
+      issue.droppable("disable");
+    }
+  });
+  
+  quick_edit_log("issue d&d disabled.");
 }
 
 function quick_edit_get_selections() {
@@ -60,7 +98,12 @@ function quick_edit_get_issue_id_from_element(element) {
   return m[1];
 }
 
+function quick_edit_input_dialog_open(){
+  quick_edit_drag_and_drop_disable();
+}
+
 function quick_edit_input_dialog_close(){
+  quick_edit_drag_and_drop_enable();
   $("#quick_edit_input_dialog").remove();
 }
 
@@ -115,15 +158,23 @@ function quick_edit_show_new_relation_dialog(first_issue_id, second_issue_id, ba
      closeOnEscape: false,
      width: 450,
      height: 150,
+     open: quick_edit_new_relation_dialog_open,
      close: quick_edit_new_relation_dialog_close
   });
+
+  quick_edit_log("new_relation dialog open.");
 }
 
 function quick_edit_new_relation_dialog_cancel(){
    $('#quick_edit_new_relation_dialog').dialog("close");
 }
 
+function quick_edit_new_relation_dialog_open(){
+  quick_edit_drag_and_drop_disable();
+}
+
 function quick_edit_new_relation_dialog_close(){
+  quick_edit_drag_and_drop_enable();
 }
 
 //]]>
