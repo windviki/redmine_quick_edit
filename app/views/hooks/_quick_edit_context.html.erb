@@ -1,8 +1,11 @@
 <%
    extend ApplicationHelper
    extend IssueRelationsHelper
+
+   excludes = Setting.plugin_quick_edit['custom_field_exclude_names'].split(/,/).map {|v| Regexp.new(v)}
+
    custom_fields = @issues.map(&:available_custom_fields).reduce(:&).select do |f|
-     %w(string date int text link float).include?(f.field_format)
+     %w{string date int text link float}.include?(f.field_format) && ( excludes.empty? || excludes.none? {|ex| ex.match(f.name)} )
    end
 
    first_issue = @issues.first

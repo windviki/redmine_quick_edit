@@ -85,5 +85,17 @@ module ApplicationHelper
         :date
      end
   end
+
+  def parse_size(size, width_range, width_default, height_range, height_default)
+     size = size.split(",")
+     size[0] = width_default if size.length != 2 || !size[0].match(/\d{1,9}/)
+     size[1] = height_default if size.length != 2 || !size[1].match(/\d{1,9}/)
+     size[0] = size[0].to_i
+     size[1] = size[1].to_i
+     size[0] = width_default unless width_range.include?(size[0])
+     size[1] = height_default unless height_range.include?(size[1])
+
+     size
+  end
 end
 

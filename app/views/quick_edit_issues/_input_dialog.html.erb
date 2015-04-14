@@ -1,3 +1,12 @@
+<%
+  dialog_size = parse_size(Setting.plugin_quick_edit['input_dialog_base_size'], 480...2048, 480, 280...2048,280)
+  dialog_size[0] += 227 if @dialog_params[:field_type] == :text || @dialog_params[:field_type] == :string
+  dialog_size[1] += 134 if @dialog_params[:field_type] == :text
+  dialog_size[1] += 31 if @dialog_params[:attribute_name]==:description
+  dialog_size[1] += 50 unless @dialog_params[:description].nil?
+
+  textarea_size = parse_size(Setting.plugin_quick_edit['textarea_size'], 10...256, 80, 10...256, 10)
+%>
 <div id="quick_edit_input_dialog" title="Quick Edit - <%= @dialog_params[:caption] %>" style="background-color: white;">
   <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
   <div style="padding-top: 9px; padding-bottom: 15px; padding-left: 10px;">
@@ -5,8 +14,8 @@
     <span style="vertical-align: middle; font-size: 0.85em;">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
   </div>
   <div class="box" style="font-size: 0.9em; font-weight: normal; padding-left: 10px; padding-right: 10px; padding-bottom: 12px; margin-bottom:0px;">
-  <div>
-    <span><%= @dialog_params[:caption] %>:</span></div>
+  <span><%= @dialog_params[:caption] %>:</span>
+  <div style="text-align: middle;">
     <% case @dialog_params[:field_type] %>
     <% when :date %>
     <input id="new_value"
@@ -28,8 +37,8 @@
     <% when :text %>
     <textarea id="new_value"
            name="<%= @dialog_params[:target_specifier] %>"
-           cols="80"
-           rows="10"
+           cols="<%= textarea_size[0] %>"
+           rows="<%= textarea_size[1] %>"
            style="vertical-align:middle;"><%= @dialog_params[:default_value] %></textarea>
     <% if @dialog_params[:attribute_name].to_sym == :description %>
     <%= wikitoolbar_for 'new_value' %>
@@ -59,13 +68,11 @@
 <script>
 //<![CDATA[
   $(".ui-autocomplete").css("z-index",200);
-  var width = <%= (@dialog_params[:field_type] == :int || @dialog_params[:field_type] == :date) ? 480 : 707 %>;
-  var height = <%= ((@dialog_params[:field_type] == :text) ? 414 : 280) + ((@dialog_params[:description].nil?) ? 0 : 50) + ((@dialog_params[:attribute_name]==:description)?31:0)%>;
   $("#quick_edit_input_dialog").dialog({
      modal: true,
      closeOnEscape: false,
-     width: width,
-     height: height,
+     width: <%= dialog_size[0] %>,
+     height: <%= dialog_size[1] %>,
      buttons: {
         "Submit" : quick_edit_input_dialog_submit,
         "Cancel" : quick_edit_input_dialog_cancel
@@ -74,6 +81,6 @@
      close: quick_edit_input_dialog_close
   });
 
-  quick_edit_log("input_dialog open.");
+  quick_edit_log("input_dialog open. size=<%=dialog_size[0]%>,<%=dialog_size[1]%>");
 //]]>
 </script>
