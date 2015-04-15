@@ -14,8 +14,7 @@
     <span style="vertical-align: middle; font-size: 0.85em;">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
   </div>
   <div class="box" style="font-size: 0.9em; font-weight: normal; padding-left: 10px; padding-right: 10px; padding-bottom: 12px; margin-bottom:0px;">
-  <span><%= @dialog_params[:caption] %>:</span>
-  <div style="text-align: middle;">
+    <span><%= @dialog_params[:caption] %>:</span>
     <% case @dialog_params[:field_type] %>
     <% when :date %>
     <input id="new_value"
