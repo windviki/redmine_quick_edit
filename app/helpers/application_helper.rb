@@ -5,7 +5,23 @@ module ApplicationHelper
     Redmine::VERSION::MAJOR * 10 + Redmine::VERSION::MINOR
   end
 
-  def editable(attribute_name, can)
+  def editable(attribute_name, can, readonly_fields)
+    if readonly_fields.include?(attribute_name.to_s)
+      return false
+    end
+
+    if redmine_version() >= 30
+      return can[:edit]
+    else
+      return can[:update]
+    end
+  end
+
+  def editable_custom_field(custom_field, can, readonly_fields)
+    if readonly_fields.include?(custom_field.id.to_s)
+      return false
+    end
+
     if redmine_version() >= 30
       return can[:edit]
     else

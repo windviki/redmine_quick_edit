@@ -8,6 +8,10 @@
      %w{string date int text link float}.include?(f.field_format) && ( excludes.empty? || excludes.none? {|ex| ex.match(f.name)} )
    end
 
+   readonly_fields = @issues.map {|issue| issue.read_only_attribute_names(User.current)}
+   readonly_fields.flatten!
+   readonly_fields.uniq!
+
    first_issue = @issues.first
    first_issue_id = first_issue.id
    if @issues.size > 1
@@ -28,19 +32,19 @@
   <li class="folder">
     <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
     <ul>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:subject), :subject, nil, back_url, !editable(:subject,@can)) %>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:description), :description, nil, back_url, !editable(:description,@can)) %>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:parent_issue_id), :parent_issue_id, nil, back_url, !editable(:parent_issue_id,@can)) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:subject), :subject, nil, back_url, !editable(:subject,@can,readonly_fields)) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:description), :description, nil, back_url, !editable(:description,@can,readonly_fields)) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:parent_issue_id), :parent_issue_id, nil, back_url, !editable(:parent_issue_id,@can,readonly_fields)) %>
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('start_date') } %>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:start_date), :start_date, nil, back_url, !editable(:start_date,@can)) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:start_date), :start_date, nil, back_url, !editable(:start_date,@can,readonly_fields)) %>
       <% end %>
 
       <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('due_date') } %>
-      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:due_date), :due_date, nil, back_url, !editable(:due_date,@can)) %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:due_date), :due_date, nil, back_url, !editable(:due_date,@can,readonly_fields)) %>
       <% end %>
 
       <% custom_fields.each do |f| %>
-      <%= quick_edit_link_to(@issue_ids, f.name, 'custom_field_values', f.id, back_url, !editable(f,@can)) %>
+      <%= quick_edit_link_to(@issue_ids, f.name, 'custom_field_values', f.id, back_url, !editable_custom_field(f,@can,readonly_fields)) %>
       <% end %>
 
       <% if @issues.size <= 2  %>
