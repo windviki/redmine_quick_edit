@@ -30,7 +30,7 @@
 
 %>
   <li class="folder">
-    <a href="#" class="submenu"><%= l(:button_quick_edit) %></a>
+    <a id="quick_edit_context" href="#" class="submenu"><%= l(:button_quick_edit) %></a>
     <ul>
       <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:subject), :subject, nil, back_url, !editable(:subject,@can,readonly_fields)) %>
       <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:description), :description, nil, back_url, !editable(:description,@can,readonly_fields)) %>

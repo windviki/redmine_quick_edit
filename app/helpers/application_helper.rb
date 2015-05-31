@@ -34,11 +34,14 @@ module ApplicationHelper
 
      ajax_url = quick_edit_issues_edit_path(:ids => issue_ids, :target_specifier => target_specifier, :back_url => back_url)
 
-     sprintf('<li>%s</li>',
+     html_id = "quick_edit_context_#{attribute_name}"
+     html_id += "_#{additional_index}" unless additional_index.nil?
+
+     sprintf("<li id='#{html_id}'>%s</li>",
         context_menu_link(
            h(caption),
            ajax_url,
-           :class => 'icon-edit',
+           :class => 'quick_edit icon-edit',
            :disabled => disabled,
            :remote => true
         )
