@@ -51,7 +51,11 @@ describe "Edit" do
     new_value = '1900-01-02'
     expect( edit(@issue_id, :start_date, new_value) ).to eq new_value
 
-    expect( edit_with_alert(@issue_id, :start_date, "") ).to eq new_value
+    invalid_value = '1900-01-0a'
+    expect( edit_with_alert(@issue_id, :start_date, invalid_value) ).to eq new_value
+
+    invalid_value = ''
+    expect( edit_with_alert(@issue_id, :start_date, invalid_value) ).to eq new_value
   end
 
   it "due_date can edit" do
@@ -61,7 +65,11 @@ describe "Edit" do
     new_value = '2000-01-02'
     expect( edit(@issue_id, :due_date, new_value) ).to eq new_value
 
-    expect( edit_with_alert(@issue_id, :due_date, "") ).to eq new_value
+    invalid_value = '2000-01-0a'
+    expect( edit_with_alert(@issue_id, :due_date, invalid_value) ).to eq new_value
+
+    invalid_value = ''
+    expect( edit_with_alert(@issue_id, :due_date, invalid_value) ).to eq new_value
   end
 
   it "description can edit" do
@@ -84,6 +92,7 @@ describe "Edit" do
   def edit_with_alert(issue_id, attribute_name, new_value)
     @issues_page.quick_edit_for_core_field issue_id, attribute_name, new_value, true
     @issues_page.alert.accept
+    @issues_page.cancel_quick_edit
 
     field_value = get_core_field(issue_id, attribute_name)
     field_value
