@@ -136,6 +136,7 @@ describe "Edit" do
 
     @issues_page.quick_edit_for_custom_field issue_id, cf_id, new_value, true
     @issues_page.alert.accept
+    @issues_page.cancel_quick_edit
 
     cf = get_custom_field(issue_id, custom_field_name)
     cf["value"]

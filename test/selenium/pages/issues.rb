@@ -74,6 +74,14 @@ module QuickEdit
 
           IssuesPage.new @driver, @base_url, @project unless desire_alerting
         end
+
+        def cancel_quick_edit
+          button_elements = find_elements(:css, 'span.ui-button-text')
+          cancel_button = button_elements.select do |button_element|
+            button_element.text == 'Cancel'
+          end
+          cancel_button.first.click
+        end
       end
     end
   end
