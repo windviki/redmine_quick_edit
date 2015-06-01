@@ -82,11 +82,31 @@ describe "Edit" do
     expect( edit_with_alert(@issue_id, :description, "") ).to eq new_value
   end
 
+  it "parent_issue_id can edit" do
+    issue_ids = @issues_page.issue_ids_on_page
+    issue_new_page = @issues_page.open_new_page()
+    issue_show_page = issue_new_page.create(:bug, 'first subject')
+    new_issue_id = issue_show_page.id
+    @issues_page = issue_show_page.open_issues
+
+    new_value = @issue_id.to_s
+    expect( edit(new_issue_id, :parent_issue_id, new_value) ).to eq new_value.to_i
+
+    invalid_value = ''
+    expect( edit_with_alert(new_issue_id, :parent_issue_id, invalid_value) ).to eq new_value.to_i
+  end
+
   def edit(issue_id, attribute_name, new_value)
     @issues_page.quick_edit_for_core_field issue_id, attribute_name, new_value
 
+    attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)
-    field_value
+
+    if attribute_name == :parent
+      field_value["id"]
+    else
+      field_value
+    end
   end
 
   def edit_with_alert(issue_id, attribute_name, new_value)
@@ -94,8 +114,14 @@ describe "Edit" do
     @issues_page.alert.accept
     @issues_page.cancel_quick_edit
 
+    attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)
-    field_value
+
+    if attribute_name == :parent
+      field_value["id"]
+    else
+      field_value
+    end
   end
 
   def edit_custom_field(issue_id, custom_field_name, new_value)

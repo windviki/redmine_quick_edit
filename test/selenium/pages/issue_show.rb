@@ -16,8 +16,8 @@ module QuickEdit
         end
 
         def id
-          title = @driver.getTitle()
-          /^(\w+) #(\d+)/ =~ title
+          url = @driver.current_url
+          /\/(\d+)$/ =~ url
           Regexp.last_match(1)
         end
 
