@@ -27,6 +27,7 @@ describe "Edit" do
     start_page = QuickEdit::Test::Pages::StartPage.new(@driver, @base_url, @default_project)
     first_page = start_page.login @default_user, @default_password
     @issues_page = first_page.open_issues
+    @issue_id = @issues_page.issue_ids_on_page().first().to_i
   end
   
   after(:each) do

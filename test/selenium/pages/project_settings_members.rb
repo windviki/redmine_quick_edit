@@ -44,7 +44,11 @@ module QuickEdit
           end
         end
 
-        def add(user_id, role_id)
+        def add(user_id, role_id, redmine_version)
+          if redmine_version >= 300
+            click :css, "a[href$='/memberships/new']"
+          end
+
           membership_elements = find_elements(:css, 'input[name^=membership]')
           userid_elements = membership_elements.select do |membership_element|
             name = membership_element.attribute("name")

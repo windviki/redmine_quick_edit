@@ -116,7 +116,10 @@ describe "Edit" do
   end
 
   it "setup roles" do
-    users_page = @first_page.open_users
+    admin_info_page = @first_page.open_admin_info
+    redmine_version = admin_info_page.redmine_version
+
+    users_page = admin_info_page.open_users
     rep_user_id = users_page.find_user("rep1")
 
     projects_page = users_page.open_projects
@@ -126,7 +129,7 @@ describe "Edit" do
     #p role_name
     if role_name.nil?
       reporter_role_id = 5 #reporter_role_id
-      members_page = members_page.add rep_user_id, reporter_role_id
+      members_page = members_page.add rep_user_id, reporter_role_id, redmine_version
       members_page.find_role(rep_user_id)
     end
   end
