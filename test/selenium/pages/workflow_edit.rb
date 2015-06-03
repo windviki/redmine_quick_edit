@@ -15,8 +15,8 @@ module QuickEdit
           WorkflowEditPage.new driver, base_url, project
         end
 
-        def open_field_permission_page
-          WorkflowPermissionsPage.open @driver, @base_url, @project
+        def open_field_permission_page redmine_version
+          WorkflowPermissionsPage.open @driver, @base_url, @project, redmine_version
         end
 
       end

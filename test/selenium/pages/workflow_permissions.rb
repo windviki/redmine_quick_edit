@@ -4,15 +4,16 @@ module QuickEdit
   module Test
     module Pages
       class WorkflowPermissionsPage < Page
-        def initialize(driver, base_url, project)
+        def initialize(driver, base_url, project, redmine_version)
           super(driver, base_url, project)
+          @redmine_version = redmine_version
 
           find_element :css, "body[class='controller-workflows action-permissions']"
         end
 
-        def self.open(driver, base_url, project)
+        def self.open(driver, base_url, project, redmine_version)
           driver.get "#{base_url}/workflows/permissions"
-          WorkflowPermissionsPage.new driver, base_url, project
+          WorkflowPermissionsPage.new driver, base_url, project, redmine_version
         end
 
         def get_permissions(role_id, tracker, target_state, target_field_ids)
@@ -24,9 +25,9 @@ module QuickEdit
           permissions = {}
           permission_elements.each do |permission_element|
             name = permission_element.attribute("name")
-            /permissions\[(.+?)\]\[(\d+)\]/ =~ name
-            id = Regexp.last_match(1)
-            state = Regexp.last_match(2)
+            parsed_name = parse_html_name(name)
+            id = parsed_name[0]
+            state = parsed_name[1]
 
             if state == target_state && target_field_ids.include?(id)
               permissions[id] = { state => selected(permission_element).first.attribute("value") }
@@ -50,14 +51,34 @@ module QuickEdit
 
           permissions.each do |k,v| 
             v.each do |state, permission|
-              select :name, "permissions[#{k}][#{state}]", permission
+              select :name, build_html_name(k,state), permission
             end
           end
           click :name, :commit
 
-          WorkflowPermissionsPage.new @driver, @base_url, @project
+          WorkflowPermissionsPage.new @driver, @base_url, @project, @redmine_version
         end
 
+        def parse_html_name(name)
+          /permissions\[(.+?)\]\[(\d+)\]/ =~ name
+          if /2.3/ =~ @redmine_version
+            id = Regexp.last_match(1)
+            state = Regexp.last_match(2)
+          else
+            id = Regexp.last_match(2)
+            state = Regexp.last_match(1)
+          end
+
+          [id, state]
+        end
+
+        def build_html_name(id, state)
+          if /^2.3/ =~ @redmine_version
+            "permissions[#{id}][#{state}]"
+          else
+            "permissions[#{state}][#{id}]"
+          end
+        end
       end
     end
   end

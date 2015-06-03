@@ -7,7 +7,9 @@ module QuickEdit
         def initialize(driver, base_url, project)
           super(driver, base_url, project)
 
-          find_element :css, "body[class='controller-issues action-index']"
+          #redmine-2.3: controller-issues action-index
+          #redmine-2.6: project-projectname controller-issues action-index
+          find_element :css, "body[class~='controller-issues'][class~='action-index']"
         end
 
         def self.open(driver, base_url, project)

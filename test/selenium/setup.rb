@@ -124,11 +124,14 @@ describe "Edit" do
     role_reporter = "5" #reporter
     tracker_bug = "1" #bug
     state_new = "1" #new
-    custom_field_readonly = get_custom_field(1, "readonly_in_progress")["id"].to_s
+    custom_field_readonly = get_custom_field(sampling_issue_id(), :readonly_in_progress)["id"].to_s
     #p "readonly in progress's id = #{custom_field_readonly}"
 
-    workflow_edit_page = @first_page.open_workflow_edit
-    permission_page = workflow_edit_page.open_field_permission_page
+    admin_info_page = @first_page.open_admin_info
+    redmine_version = admin_info_page.redmine_version
+
+    workflow_edit_page = admin_info_page.open_workflow_edit
+    permission_page = workflow_edit_page.open_field_permission_page redmine_version
     permissions = permission_page.get_permissions(role_reporter, tracker_bug, state_new, [custom_field_readonly])
     #p permissions.inspect
 
@@ -153,6 +156,16 @@ describe "Edit" do
     json = get_json("issues/#{issue_id}.json")
 
     json["issue"]["custom_fields"]
+  end
+
+  def sampling_issue_id()
+    get_issues().first()["id"]
+  end
+
+  def get_issues()
+    json = get_json("issues.json")
+
+    json["issues"]
   end
 
   def get_json(path)
