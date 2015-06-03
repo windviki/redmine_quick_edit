@@ -49,7 +49,7 @@ module QuickEdit
             click :css, "a[href$='/memberships/new']"
           end
 
-          membership_elements = find_elements(:css, 'input[name^=membership]')
+          membership_elements = find_elements(:css, 'form.new_membership input[name^=membership]')
           userid_elements = membership_elements.select do |membership_element|
             name = membership_element.attribute("name")
             /membership\[user_ids\]\[\]/ =~ name

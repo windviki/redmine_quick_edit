@@ -38,6 +38,16 @@ module QuickEdit
           action.move_to(element).context_click(element).perform
         end
 
+        def find_quick_edit_menu_for_custom_field(issue_id, custom_field_id)
+          menu_selector = build_menu_selector_for_custom_field(custom_field_id)
+
+          open_context issue_id
+
+          menu_element = find_element(:id, "quick_edit_context")
+          menu_item_element = find_element(:css, menu_selector)
+          menu_item_element
+        end
+
         def quick_edit(issue_id, menu_selector, new_value)
           open_context issue_id
 
@@ -60,11 +70,17 @@ module QuickEdit
           IssuesPage.new @driver, @base_url, @project unless desire_alerting
         end
 
+        def build_menu_selector_for_custom_field(custom_field_id)
+          "#quick_edit_context_custom_field_values_#{custom_field_id} > a"
+        end
+
         def quick_edit_for_custom_field(issue_id, custom_field_id, new_value, desire_alerting = false)
+          menu_selector = build_menu_selector_for_custom_field(custom_field_id)
+
           open_context issue_id
 
           menu_element = find_element(:id, "quick_edit_context")
-          menu_item_element = find_element(:css, "#quick_edit_context_custom_field_values_#{custom_field_id} > a")
+          menu_item_element = find_element(:css, menu_selector)
 
           action.move_to(menu_element).click(menu_item_element).perform
 

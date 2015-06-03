@@ -108,10 +108,18 @@ describe "Edit" do
 
   it "setup users" do
     users_page = @first_page.open_users
-    rep_user_id = users_page.find_user("rep1")
-    if rep_user_id.nil?
+    user_id = users_page.find_user("rep1")
+    if user_id.nil?
       user_new_page = users_page.open_new_page
       user_edit_page = user_new_page.create("rep1", "1", "rep", "rep1@localhost.com", "dummy")
+      users_page = user_edit_page.open_users
+    end
+
+    user_id = users_page.find_user("dev1")
+    if user_id.nil?
+      user_new_page = users_page.open_new_page
+      user_edit_page = user_new_page.create("dev1", "1", "dev", "dev1@localhost.com", "dummy")
+      users_page = user_edit_page.open_users
     end
   end
 
@@ -121,21 +129,32 @@ describe "Edit" do
 
     users_page = admin_info_page.open_users
     rep_user_id = users_page.find_user("rep1")
+    dev_user_id = users_page.find_user("dev1")
 
+    user_id = rep_user_id
     projects_page = users_page.open_projects
     project_page = projects_page.open_settings_page(@default_project)
     members_page = project_page.open_members
-    role_name = members_page.find_role(rep_user_id)
+    role_name = members_page.find_role(user_id)
     #p role_name
     if role_name.nil?
-      reporter_role_id = 5 #reporter_role_id
-      members_page = members_page.add rep_user_id, reporter_role_id, redmine_version
-      members_page.find_role(rep_user_id)
+      role_id = 5 #reporter
+      members_page = members_page.add user_id, role_id, redmine_version
+      members_page.find_role(user_id)
+    end
+
+    user_id = dev_user_id
+    role_name = members_page.find_role(user_id)
+    #p role_name
+    if role_name.nil?
+      role_id = 4 #developer
+      members_page = members_page.add user_id, role_id, redmine_version
+      members_page.find_role(user_id)
     end
   end
 
   it "setup permissions" do
-    role_reporter = "5" #reporter
+    role_developper = "4" #developper
     tracker_bug = "1" #bug
     state_new = "1" #new
     custom_field_readonly = get_custom_field(sampling_issue_id(), :readonly_in_progress)["id"].to_s
@@ -146,13 +165,13 @@ describe "Edit" do
 
     workflow_edit_page = admin_info_page.open_workflow_edit
     permission_page = workflow_edit_page.open_field_permission_page redmine_version
-    permissions = permission_page.get_permissions(role_reporter, tracker_bug, state_new, [custom_field_readonly])
+    permissions = permission_page.get_permissions(role_developper, tracker_bug, state_new, [custom_field_readonly])
     #p permissions.inspect
 
     permission = permissions[custom_field_readonly][state_new]
     if permission.nil? || permission != "readonly"
       permissions = { custom_field_readonly => {state_new => "readonly"} }
-      permission_page.update role_reporter, tracker_bug, permissions
+      permission_page.update role_developper, tracker_bug, permissions
     end
   end
 

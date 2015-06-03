@@ -135,6 +135,18 @@ describe "Edit" do
     end
   end
 
+  it "readonly field can not edit" do
+    welcome_page = @issues_page.logout
+    start_page = welcome_page.open_login
+    first_page = start_page.login("dev1", "dummy")
+    @issues_page = first_page.open_issues
+
+    field_id = get_custom_field(@issue_id, :readonly_in_progress)["id"]
+    menu_item = @issues_page.find_quick_edit_menu_for_custom_field(@issue_id, field_id)
+
+    expect( menu_item.attribute("class") ).to eq "quick_edit icon-edit disabled"
+  end
+
   def edit(issue_id, attribute_name, new_value)
     @issues_page.quick_edit issue_id, attribute_name, new_value
 

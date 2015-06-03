@@ -109,6 +109,16 @@ module QuickEdit
         def open_issues
           IssuesPage.open @driver, @base_url, @project
         end
+
+        def open_login
+          StartPage.open @driver, @base_url, @project
+        end
+
+        def logout()
+          click :css, 'a.logout'
+
+          WelcomePage.new @driver, @base_url, @project
+        end
       end
     end
   end

@@ -11,6 +11,10 @@ module QuickEdit
           find_element :id, "username"
         end
 
+        def self.open(driver, base_url, project)
+          StartPage.new driver, base_url, project
+        end
+
         def login(login_id, password)
           input_text :id, "username", login_id
           input_text :id, "password", password
