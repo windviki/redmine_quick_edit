@@ -61,7 +61,7 @@ module QuickEdit
 
         def parse_html_name(name)
           /permissions\[(.+?)\]\[(\d+)\]/ =~ name
-          if /2.3/ =~ @redmine_version
+          if @redmine_version < 205
             id = Regexp.last_match(1)
             state = Regexp.last_match(2)
           else
@@ -73,7 +73,7 @@ module QuickEdit
         end
 
         def build_html_name(id, state)
-          if /^2.3/ =~ @redmine_version
+          if @redmine_version < 205
             "permissions[#{id}][#{state}]"
           else
             "permissions[#{state}][#{id}]"

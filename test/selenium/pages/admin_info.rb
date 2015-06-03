@@ -21,8 +21,11 @@ module QuickEdit
             /Redmine (\d+\.\d+\.\d+)/ =~ element.text
           end
 
-          /Redmine (\d+\.\d+\.\d+)/ =~ ver_elements.first.text
-          version = Regexp.last_match(1)
+          /Redmine (\d+)\.(\d+)\.(\d+)/ =~ ver_elements.first.text
+          major = Regexp.last_match(1).to_i * 100
+          minor = Regexp.last_match(2).to_i
+          tiny = Regexp.last_match(3).to_f / 100
+          version = major + minor + tiny
           version
         end
       end

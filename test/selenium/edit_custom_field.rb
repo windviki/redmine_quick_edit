@@ -113,6 +113,27 @@ describe "Edit" do
     expect( edit_custom_field_with_alert(@issue_id, :custom_float, invalid_value) ).to eq new_value
   end
 
+  it "custom_link can edit" do
+    admin_info_page = @issues_page.open_admin_info
+    redmine_version = admin_info_page.redmine_version
+
+
+    if redmine_version >= 205
+
+      @issues_page = admin_info_page.open_issues
+  
+      new_value = 'dummy'
+      expect( edit_custom_field(@issue_id, :custom_link, new_value) ).to eq new_value
+  
+      new_value = 'custom_link'
+      expect( edit_custom_field(@issue_id, :custom_link, new_value) ).to eq new_value
+  
+      invalid_value = ''
+      expect( edit_custom_field_with_alert(@issue_id, :custom_link, invalid_value) ).to eq new_value
+
+    end
+  end
+
   def edit(issue_id, attribute_name, new_value)
     @issues_page.quick_edit issue_id, attribute_name, new_value
 

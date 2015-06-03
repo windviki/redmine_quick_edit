@@ -57,7 +57,10 @@ describe "Edit" do
   end
 
   it "setup custom fields" do
-    custom_fields_page = @first_page.open_custom_fields
+    admin_info_page = @first_page.open_admin_info
+    redmine_version = admin_info_page.redmine_version
+
+    custom_fields_page = admin_info_page.open_custom_fields
     id = custom_fields_page.find_field(:custom_text)
     if id.nil?
       new_page = custom_fields_page.open_new_page
@@ -92,6 +95,14 @@ describe "Edit" do
     if id.nil?
       new_page = custom_fields_page.open_new_page
       custom_fields_page = new_page.create :readonly_in_progress, :string
+    end
+
+    if redmine_version >= 205
+      id = custom_fields_page.find_field(:custom_link)
+      if id.nil?
+        new_page = custom_fields_page.open_new_page
+        custom_fields_page = new_page.create :custom_link, :link
+      end
     end
   end
 
