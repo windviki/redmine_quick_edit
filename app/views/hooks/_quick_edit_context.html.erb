@@ -43,6 +43,10 @@
       <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:due_date), :due_date, nil, back_url, !editable(:due_date,@can,readonly_fields)) %>
       <% end %>
 
+      <% unless @issues.any? {|issue| issue.disabled_core_fields.include?('estimated_hours') } %>
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:estimated_hours), :estimated_hours, nil, back_url, !editable(:estimated_hours,@can,readonly_fields)) %>
+      <% end %>
+
       <% custom_fields.each do |f| %>
       <%= quick_edit_link_to(@issue_ids, f.name, 'custom_field_values', f.id, back_url, !editable_custom_field(f,@can,readonly_fields)) %>
       <% end %>

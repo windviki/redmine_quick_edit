@@ -86,6 +86,8 @@ module ApplicationHelper
         l(:field_start_date)
      when :due_date
         l(:field_due_date)
+     when :estimated_hours
+        l(:field_estimated_hours)
      end
   end
 
@@ -102,6 +104,8 @@ module ApplicationHelper
         :date
      when :due_date
         :date
+     when :estimated_hours
+        :float
      end
   end
 
