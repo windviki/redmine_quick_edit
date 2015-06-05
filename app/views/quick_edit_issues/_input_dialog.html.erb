@@ -1,6 +1,6 @@
 <%
   dialog_size = parse_size(Setting.plugin_quick_edit['input_dialog_base_size'], 480...2048, 480, 280...2048,280)
-  dialog_size[0] += 227 if @dialog_params[:field_type] == :text || @dialog_params[:field_type] == :string
+  dialog_size[0] += 227 if @dialog_params[:field_type] == :text || @dialog_params[:field_type] == :string || @dialog_params[:field_type] == :link
   dialog_size[1] += 134 if @dialog_params[:field_type] == :text
   dialog_size[1] += 31 if @dialog_params[:attribute_name]==:description
   dialog_size[1] += 50 unless @dialog_params[:description].nil?
