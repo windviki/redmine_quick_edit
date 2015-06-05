@@ -23,7 +23,7 @@
            size="15"
            value="<%= @dialog_params[:default_value] %>"></input>
     <%= calendar_for('new_value') %>
-    <% when :int %>
+    <% when :int, :float %>
     <input id="new_value"
            name="<%= @dialog_params[:target_specifier] %>"
            type="text" 
