@@ -12,7 +12,7 @@ include RSpec::Expectations
 
 describe "Edit custom field" do
 
-  before(:each) do
+  before(:all) do
     profile = Selenium::WebDriver::Firefox::Profile.new
     @driver = Selenium::WebDriver.for :firefox, :profile => profile
     @driver.manage.window.maximize
@@ -29,10 +29,24 @@ describe "Edit custom field" do
     @issues_page = first_page.open_issues
     @issue_id = @issues_page.issue_ids_on_page().first().to_i
   end
+
+  before(:each) do
+    if @issues_page.current_user != @default_user
+      welcome_page = @issues_page.logout
+      start_page = welcome_page.open_login
+      first_page = start_page.login(@default_user, @default_password)
+      @issues_page = first_page.open_issues
+    else
+      @issues_page = @issues_page.open_issues
+    end
+  end
   
   after(:each) do
-    @driver.quit
     expect(@verification_errors).to match_array []
+  end
+  
+  after(:all) do
+    @driver.quit
   end
   
   it "custom_text can edit" do

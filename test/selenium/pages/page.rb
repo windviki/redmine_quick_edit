@@ -119,6 +119,10 @@ module QuickEdit
 
           WelcomePage.new @driver, @base_url, @project
         end
+
+        def current_user()
+          find_element(:css, "a.user.active").text
+        end
       end
     end
   end
