@@ -17,16 +17,18 @@ describe "Edit custom field" do
     @driver = Selenium::WebDriver.for :firefox, :profile => profile
     @driver.manage.window.maximize
     @base_url = "http://localhost:3000/"
-    @accept_next_alert = true
     @driver.manage.timeouts.implicit_wait = 10
     @verification_errors = []
     @default_project = "test"
     @default_user = "admin"
     @default_password = "dummy"
-    @issue_id = 1
+
+    # open issues
     start_page = QuickEdit::Test::Pages::StartPage.new(@driver, @base_url, @default_project)
     first_page = start_page.login @default_user, @default_password
     @issues_page = first_page.open_issues
+
+    # get issue id for test
     @issue_id = @issues_page.issue_ids_on_page().first().to_i
   end
 

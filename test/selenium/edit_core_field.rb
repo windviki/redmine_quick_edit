@@ -17,13 +17,13 @@ describe "Edit core field" do
     @driver = Selenium::WebDriver.for :firefox, :profile => profile
     @driver.manage.window.maximize
     @base_url = "http://localhost:3000/"
-    @accept_next_alert = true
     @driver.manage.timeouts.implicit_wait = 10
     @verification_errors = []
     @default_project = "test"
     @default_user = "admin"
     @default_password = "dummy"
-    @issue_id = 1
+
+    # open issues page
     start_page = QuickEdit::Test::Pages::StartPage.new(@driver, @base_url, @default_project)
     first_page = start_page.login @default_user, @default_password
     @issues_page = first_page.open_issues
@@ -158,36 +158,10 @@ describe "Edit core field" do
     end
   end
 
-  def edit_custom_field(issue_id, custom_field_name, new_value)
-    cf = get_custom_field(issue_id, custom_field_name)
-    cf_id = cf["id"]
-
-    @issues_page.quick_edit_for_custom_field issue_id, cf_id, new_value
-
-    cf = get_custom_field(issue_id, custom_field_name)
-    cf["value"]
-  end
-
   def get_core_field(issue_id, attribute_name)
     json = get_json("issues/#{issue_id}.json")
 
     json["issue"][attribute_name.to_s]
-  end
-
-  def get_custom_field(issue_id, custom_field_name)
-    cf_hash_list = get_custom_fields(issue_id)
-
-    cf_hash = cf_hash_list.select do |cf_hash|
-      cf_hash["name"] == custom_field_name.to_s
-    end
-
-    cf_hash.first
-  end
-
-  def get_custom_fields(issue_id)
-    json = get_json("issues/#{issue_id}.json")
-
-    json["issue"]["custom_fields"]
   end
 
   def get_json(path)
