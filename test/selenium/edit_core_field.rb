@@ -97,6 +97,24 @@ describe "Edit" do
     expect( edit_with_alert(new_issue_id, :parent_issue_id, invalid_value) ).to eq new_value.to_i
   end
 
+  # unsigned float field
+  it "estimated_hours can edit" do
+    new_value = '0'
+    expect( edit(@issue_id, :estimated_hours, new_value).to_f ).to eq new_value.to_f
+
+    new_value = '0.1'
+    expect( edit(@issue_id, :estimated_hours, new_value).to_f ).to eq new_value.to_f
+
+    new_value = '+0.1'
+    expect( edit(@issue_id, :estimated_hours, new_value).to_f ).to eq new_value.to_f
+
+    new_value = '0.1e2'
+    expect( edit(@issue_id, :estimated_hours, new_value).to_f ).to eq new_value.to_f
+
+    invalid_value = ''
+    expect( edit_with_alert(@issue_id, :estimated_hours, invalid_value) ).to eq new_value.to_f
+  end
+
   def edit(issue_id, attribute_name, new_value)
     @issues_page.quick_edit_for_core_field issue_id, attribute_name, new_value
 
