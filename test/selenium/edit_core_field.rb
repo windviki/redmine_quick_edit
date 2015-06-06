@@ -27,7 +27,12 @@ describe "Edit core field" do
     start_page = QuickEdit::Test::Pages::StartPage.new(@driver, @base_url, @default_project)
     first_page = start_page.login @default_user, @default_password
     @issues_page = first_page.open_issues
-    @issue_id = @issues_page.issue_ids_on_page().first().to_i
+
+    # create issue for test
+    issue_new_page = @issues_page.open_new_page()
+    issue_show_page = issue_new_page.create(:bug, 'first subject')
+    @issue_id = issue_show_page.id
+
   end
 
   before(:each) do
@@ -90,23 +95,6 @@ describe "Edit core field" do
     expect( edit_with_alert(@issue_id, :description, "") ).to eq new_value
   end
 
-  it "parent_issue_id can edit" do
-    issue_ids = @issues_page.issue_ids_on_page
-    issue_new_page = @issues_page.open_new_page()
-    issue_show_page = issue_new_page.create(:bug, 'first subject')
-    new_issue_id = issue_show_page.id
-    @issues_page = issue_show_page.open_issues
-
-    new_value = @issue_id.to_s
-    expect( edit(new_issue_id, :parent_issue_id, new_value) ).to eq new_value.to_i
-
-    invalid_value = ''
-    expect( edit_with_alert(new_issue_id, :parent_issue_id, invalid_value) ).to eq new_value.to_i
-
-    new_value = @issue_id.to_s
-    expect( edit(new_issue_id, :parent_issue_id, new_value) ).to eq new_value.to_i
-  end
-
   # unsigned float field
   it "estimated_hours can edit" do
     new_value = '0'
@@ -123,6 +111,23 @@ describe "Edit core field" do
 
     invalid_value = ''
     expect( edit_with_alert(@issue_id, :estimated_hours, invalid_value) ).to eq new_value.to_f
+  end
+
+  it "parent_issue_id can edit" do
+    issue_ids = @issues_page.issue_ids_on_page
+    issue_new_page = @issues_page.open_new_page()
+    issue_show_page = issue_new_page.create(:bug, 'first subject')
+    new_issue_id = issue_show_page.id
+    @issues_page = issue_show_page.open_issues
+
+    new_value = @issue_id.to_s
+    expect( edit(new_issue_id, :parent_issue_id, new_value) ).to eq new_value.to_i
+
+    invalid_value = ''
+    expect( edit_with_alert(new_issue_id, :parent_issue_id, invalid_value) ).to eq new_value.to_i
+
+    new_value = @issue_id.to_s
+    expect( edit(new_issue_id, :parent_issue_id, new_value) ).to eq new_value.to_i
   end
 
   def edit(issue_id, attribute_name, new_value)
