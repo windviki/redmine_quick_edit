@@ -12,7 +12,7 @@ include RSpec::Expectations
 
 describe "Setup" do
 
-  before(:each) do
+  before(:all) do
     profile = Selenium::WebDriver::Firefox::Profile.new
     @driver = Selenium::WebDriver.for :firefox, :profile => profile
     @driver.manage.window.maximize
@@ -24,12 +24,22 @@ describe "Setup" do
     @default_user = "admin"
     @default_password = "dummy"
     start_page = QuickEdit::Test::Pages::StartPage.new(@driver, @base_url, @default_project)
-    @first_page = start_page.login @default_user, @default_password
+    first_page = start_page.login @default_user, @default_password
+    admin_info_page = first_page.open_admin_info
+    @redmine_version = admin_info_page.redmine_version
+    @first_page = admin_info_page
+  end
+
+  before(:each) do
+    @verification_errors = []
   end
   
   after(:each) do
-    @driver.quit
     expect(@verification_errors).to match_array []
+  end
+  
+  after(:all) do
+    @driver.quit
   end
 
   it "project" do
@@ -57,10 +67,7 @@ describe "Setup" do
   end
 
   it "custom fields" do
-    admin_info_page = @first_page.open_admin_info
-    redmine_version = admin_info_page.redmine_version
-
-    custom_fields_page = admin_info_page.open_custom_fields
+    custom_fields_page = @first_page.open_custom_fields
     id = custom_fields_page.find_field(:custom_text)
     if id.nil?
       new_page = custom_fields_page.open_new_page
@@ -97,7 +104,7 @@ describe "Setup" do
       custom_fields_page = new_page.create :readonly_in_progress, :string
     end
 
-    if redmine_version >= 205
+    if @redmine_version >= 205
       id = custom_fields_page.find_field(:custom_link)
       if id.nil?
         new_page = custom_fields_page.open_new_page
@@ -124,10 +131,7 @@ describe "Setup" do
   end
 
   it "roles" do
-    admin_info_page = @first_page.open_admin_info
-    redmine_version = admin_info_page.redmine_version
-
-    users_page = admin_info_page.open_users
+    users_page = @first_page.open_users
     rep_user_id = users_page.find_user("rep1")
     dev_user_id = users_page.find_user("dev1")
 
@@ -139,7 +143,7 @@ describe "Setup" do
     #p role_name
     if role_name.nil?
       role_id = 5 #reporter
-      members_page = members_page.add user_id, role_id, redmine_version
+      members_page = members_page.add user_id, role_id, @redmine_version
       members_page.find_role(user_id)
     end
 
@@ -148,7 +152,7 @@ describe "Setup" do
     #p role_name
     if role_name.nil?
       role_id = 4 #developer
-      members_page = members_page.add user_id, role_id, redmine_version
+      members_page = members_page.add user_id, role_id, @redmine_version
       members_page.find_role(user_id)
     end
   end
@@ -160,11 +164,8 @@ describe "Setup" do
     custom_field_readonly = get_custom_field(sampling_issue_id(), :readonly_in_progress)["id"].to_s
     #p "readonly in progress's id = #{custom_field_readonly}"
 
-    admin_info_page = @first_page.open_admin_info
-    redmine_version = admin_info_page.redmine_version
-
-    workflow_edit_page = admin_info_page.open_workflow_edit
-    permission_page = workflow_edit_page.open_field_permission_page redmine_version
+    workflow_edit_page = @first_page.open_workflow_edit
+    permission_page = workflow_edit_page.open_field_permission_page @redmine_version
     permissions = permission_page.get_permissions(role_developper, tracker_bug, state_new, [custom_field_readonly])
     #p permissions.inspect
 

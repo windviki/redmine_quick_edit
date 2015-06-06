@@ -12,7 +12,7 @@ include RSpec::Expectations
 
 describe "Edit core field" do
 
-  before(:each) do
+  before(:all) do
     profile = Selenium::WebDriver::Firefox::Profile.new
     @driver = Selenium::WebDriver.for :firefox, :profile => profile
     @driver.manage.window.maximize
@@ -29,10 +29,17 @@ describe "Edit core field" do
     @issues_page = first_page.open_issues
     @issue_id = @issues_page.issue_ids_on_page().first().to_i
   end
+
+  before(:each) do
+    @issues_page = @issues_page.open_issues
+  end
   
   after(:each) do
-    @driver.quit
     expect(@verification_errors).to match_array []
+  end
+  
+  after(:all) do
+    @driver.quit
   end
   
   it "subject can edit" do
@@ -95,6 +102,9 @@ describe "Edit core field" do
 
     invalid_value = ''
     expect( edit_with_alert(new_issue_id, :parent_issue_id, invalid_value) ).to eq new_value.to_i
+
+    new_value = @issue_id.to_s
+    expect( edit(new_issue_id, :parent_issue_id, new_value) ).to eq new_value.to_i
   end
 
   # unsigned float field
