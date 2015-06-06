@@ -10,7 +10,7 @@ require "uri"
 require "net/http"
 include RSpec::Expectations
 
-describe "Edit" do
+describe "Setup" do
 
   before(:each) do
     profile = Selenium::WebDriver::Firefox::Profile.new
@@ -32,7 +32,7 @@ describe "Edit" do
     expect(@verification_errors).to match_array []
   end
 
-  it "setup project" do
+  it "project" do
     json = get_json("projects.json")
     test_project = json["projects"].select do |project|
        project["name"] == "test"
@@ -44,7 +44,7 @@ describe "Edit" do
     end
   end
 
-  it "setup issues" do
+  it "issues" do
     issues_page = @first_page.open_issues
     issue_ids = issues_page.issue_ids_on_page
     if issue_ids.empty?
@@ -56,7 +56,7 @@ describe "Edit" do
     end
   end
 
-  it "setup custom fields" do
+  it "custom fields" do
     admin_info_page = @first_page.open_admin_info
     redmine_version = admin_info_page.redmine_version
 
@@ -106,7 +106,7 @@ describe "Edit" do
     end
   end
 
-  it "setup users" do
+  it "users" do
     users_page = @first_page.open_users
     user_id = users_page.find_user("rep1")
     if user_id.nil?
@@ -123,7 +123,7 @@ describe "Edit" do
     end
   end
 
-  it "setup roles" do
+  it "roles" do
     admin_info_page = @first_page.open_admin_info
     redmine_version = admin_info_page.redmine_version
 
@@ -153,7 +153,7 @@ describe "Edit" do
     end
   end
 
-  it "setup permissions" do
+  it "permissions" do
     role_developper = "4" #developper
     tracker_bug = "1" #bug
     state_new = "1" #new

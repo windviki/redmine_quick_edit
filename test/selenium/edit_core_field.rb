@@ -10,7 +10,7 @@ require "uri"
 require "net/http"
 include RSpec::Expectations
 
-describe "Edit" do
+describe "Edit core field" do
 
   before(:each) do
     profile = Selenium::WebDriver::Firefox::Profile.new
