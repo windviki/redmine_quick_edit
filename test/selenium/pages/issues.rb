@@ -38,6 +38,16 @@ module QuickEdit
           action.move_to(element).context_click(element).perform
         end
 
+        def find_quick_edit_menu_for_core_field(issue_id, attribute_name)
+          menu_selector = build_menu_selector_for_core_field(attribute_name)
+
+          open_context issue_id
+
+          menu_element = find_element(:id, "quick_edit_context")
+          menu_item_element = find_element(:css, menu_selector)
+          menu_item_element
+        end
+
         def find_quick_edit_menu_for_custom_field(issue_id, custom_field_id)
           menu_selector = build_menu_selector_for_custom_field(custom_field_id)
 
@@ -62,12 +72,46 @@ module QuickEdit
           submit_button.first.click
         end
 
+        def quick_edit_clear(issue_id, menu_selector)
+          open_context issue_id
+
+          menu_element = find_element(:id, "quick_edit_context")
+          menu_item_element = find_element(:css, menu_selector)
+          action.move_to(menu_element).click(menu_item_element).perform
+
+          find_element(:css, '#quick_edit_input_dialog #clear').click
+
+          buttons = find_elements(:css, "button > span")
+          submit_button = buttons.select {|button| button.text =~ /Submit/}
+          submit_button.first.click
+        end
+
         def quick_edit_for_core_field(issue_id, attribute_name, new_value, desire_alerting = false)
           menu_selector = "#quick_edit_context_#{attribute_name} > a"
 
           quick_edit(issue_id, menu_selector, new_value)
 
           IssuesPage.new @driver, @base_url, @project unless desire_alerting
+        end
+
+        def quick_edit_clear_for_core_field(issue_id, attribute_name)
+          menu_selector = build_menu_selector_for_core_field(attribute_name)
+
+          quick_edit_clear(issue_id, menu_selector)
+
+          IssuesPage.new @driver, @base_url, @project
+        end
+
+        def quick_edit_clear_for_custom_field(issue_id, custom_field_id)
+          menu_selector = build_menu_selector_for_custom_field(custom_field_id)
+
+          quick_edit_clear(issue_id, menu_selector)
+
+          IssuesPage.new @driver, @base_url, @project
+        end
+
+        def build_menu_selector_for_core_field(attribute_name)
+          "#quick_edit_context_#{attribute_name} > a"
         end
 
         def build_menu_selector_for_custom_field(custom_field_id)
