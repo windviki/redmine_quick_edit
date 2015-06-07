@@ -111,22 +111,38 @@ function quick_edit_input_dialog_cancel(){
   $("#quick_edit_input_dialog").dialog("close");
 }
 
+function quick_edit_clear(){
+}
+
 function quick_edit_input_dialog_submit(){
-  var new_value = $("#quick_edit_input_dialog #new_value").val();
-  if(new_value === null) return;
-  console.log ("new:" + new_value);
+  var target_specifier = $("#quick_edit_input_dialog #target_specifier").val();
+  var new_value_element = $("#quick_edit_input_dialog #new_value");
+  var clr_value_element = $("#quick_edit_input_dialog #clear");
 
-  var pattern = new RegExp($("#quick_edit_input_dialog > form > div > #validation_pattern").val());
-
-  if(new_value == "") {
-    alert('<%=l(:text_is_required)%>');
-    return;
+  if ($("#quick_edit_input_dialog #clear:checked").length > 0){
+    new_value_element.attr("name", "_quick_edit_tmp");
+    clr_value_element.attr("name", target_specifier);
 
   } else {
+    new_value_element.attr("name", target_specifier);
+    clr_value_element.attr("name", "_quick_edit_tmp");
 
-    if(pattern && !pattern.test(new_value)){
-       alert('<%=l(:text_invalid_format)%>');
-       return;
+    var new_value = $("#quick_edit_input_dialog #new_value").val();
+    if(new_value === null) return;
+    console.log ("new:" + new_value);
+
+    var pattern = new RegExp($("#quick_edit_input_dialog > form > div > #validation_pattern").val());
+
+    if(new_value == "") {
+      alert('<%=l(:text_is_required)%>');
+      return;
+
+    } else {
+
+      if(pattern && !pattern.test(new_value)){
+         alert('<%=l(:text_invalid_format)%>');
+         return;
+      }
     }
   }
 
