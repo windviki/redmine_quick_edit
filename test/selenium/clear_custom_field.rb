@@ -51,42 +51,42 @@ describe "Clear custom field" do
     @driver.quit
   end
   
-  it "custom_text can edit" do
+  it "custom_text can clear" do
     new_value = 'dummy'
     expect( edit_custom_field(@issue_id, :custom_text, new_value) ).to eq new_value
 
     expect( clear_custom_field(@issue_id, :custom_text) ).to eq ''
   end
 
-  it "custom_int can edit" do
+  it "custom_int can clear" do
     new_value = '0'
     expect( edit_custom_field(@issue_id, :custom_int, new_value) ).to eq new_value
 
     expect( clear_custom_field(@issue_id, :custom_int) ).to eq ''
   end
 
-  it "custom_date can edit" do
+  it "custom_date can clear" do
     new_value = '1900-01-01'
     expect( edit_custom_field(@issue_id, :custom_date, new_value) ).to eq new_value
 
     expect( clear_custom_field(@issue_id, :custom_date) ).to eq ''
   end
 
-  it "custom_long can edit" do
+  it "custom_long can clear" do
     new_value = 'dummy'
     expect( edit_custom_field(@issue_id, :custom_long, new_value) ).to eq new_value
 
     expect( clear_custom_field(@issue_id, :custom_long) ).to eq ''
   end
 
-  it "custom_float can edit" do
+  it "custom_float can clear" do
     new_value = '0'
     expect( edit_custom_field(@issue_id, :custom_float, new_value) ).to eq new_value
 
     expect( clear_custom_field(@issue_id, :custom_float) ).to eq ''
   end
 
-  it "custom_link can edit" do
+  it "custom_link can clear" do
     admin_info_page = @issues_page.open_admin_info
     redmine_version = admin_info_page.redmine_version
 
