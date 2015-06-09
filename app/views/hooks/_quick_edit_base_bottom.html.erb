@@ -154,13 +154,13 @@ function quick_edit_input_dialog_submit(){
   }
 
   var offsetY = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-  var back_url = $("#quick_edit_input_dialog > form > div > #back_url").val();
+  var back_url = $("#quick_edit_input_dialog #back_url").val();
   if (back_url.indexOf("?") == -1) {
     back_url = back_url + "?offsetY=" + offsetY;
   } else {
     back_url = back_url + "&offsetY=" + offsetY;
   }
-  $("#quick_edit_input_dialog > form > div > #back_url").val(back_url);
+  $("#quick_edit_input_dialog #back_url").val(back_url);
 
   $("#quick_edit_input_dialog > form").submit();
 }
