@@ -131,7 +131,9 @@ describe "Edit core field" do
   end
 
   def edit(issue_id, attribute_name, new_value)
-    @issues_page.quick_edit_for_core_field issue_id, attribute_name, new_value
+    quick_edit = @issues_page.open_context(issue_id)
+    menu_selector = quick_edit.menu_selector(attribute_name)
+    @issues_page = quick_edit.update_field(issue_id, menu_selector, new_value)
 
     attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)
@@ -144,9 +146,11 @@ describe "Edit core field" do
   end
 
   def edit_with_alert(issue_id, attribute_name, new_value)
-    @issues_page.quick_edit_for_core_field issue_id, attribute_name, new_value, true
-    @issues_page.alert.accept
-    @issues_page.cancel_quick_edit
+    quick_edit = @issues_page.open_context(issue_id)
+    menu_selector = quick_edit.menu_selector(attribute_name)
+    quick_edit.update_field(issue_id, menu_selector, new_value, true)
+    quick_edit.alert.accept
+    quick_edit.cancel_quick_edit
 
     attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)

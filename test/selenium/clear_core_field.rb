@@ -95,7 +95,9 @@ describe "Clear core field" do
   end
 
   def clear(issue_id, attribute_name)
-    @issues_page.quick_edit_clear_for_core_field issue_id, attribute_name
+    quick_edit = @issues_page.open_context(issue_id)
+    menu_selector = quick_edit.menu_selector(attribute_name)
+    @issues_page = quick_edit.clear_field(issue_id, menu_selector)
 
     attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)

@@ -106,6 +106,10 @@ module QuickEdit
           WorkflowEditPage.open @driver, @base_url, @project
         end
 
+        def open_mypage
+          MyPage.open @driver, @base_url, @project
+        end
+
         def open_issues
           IssuesPage.open @driver, @base_url, @project
         end

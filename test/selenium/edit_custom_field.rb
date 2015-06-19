@@ -163,18 +163,13 @@ describe "Edit custom field" do
     expect( menu_item.attribute("class") ).to eq "quick_edit icon-edit disabled"
   end
 
-  def edit(issue_id, attribute_name, new_value)
-    @issues_page.quick_edit issue_id, attribute_name, new_value
-
-    field_value = get_core_field(issue_id, attribute_name)
-    field_value
-  end
-
   def edit_custom_field(issue_id, custom_field_name, new_value)
     cf = get_custom_field(issue_id, custom_field_name)
     cf_id = cf["id"]
 
-    @issues_page.quick_edit_for_custom_field issue_id, cf_id, new_value
+    quick_edit = @issues_page.open_context(issue_id)
+    menu_selector = quick_edit.menu_selector(:custom_field, cf_id)
+    @issues_page = quick_edit.update_field(issue_id, menu_selector, new_value)
 
     cf = get_custom_field(issue_id, custom_field_name)
     cf["value"]
@@ -184,20 +179,16 @@ describe "Edit custom field" do
     cf = get_custom_field(issue_id, custom_field_name)
     cf_id = cf["id"]
 
-    @issues_page.quick_edit_for_custom_field issue_id, cf_id, new_value, true
-    @issues_page.alert.accept
-    @issues_page.cancel_quick_edit
+    quick_edit = @issues_page.open_context(issue_id)
+    menu_selector = quick_edit.menu_selector(:custom_field, cf_id)
+    quick_edit.update_field(issue_id, menu_selector, new_value, true)
+    quick_edit.alert.accept
+    quick_edit.cancel_quick_edit
 
     cf = get_custom_field(issue_id, custom_field_name)
     cf["value"]
   end
 
-
-  def get_core_field(issue_id, attribute_name)
-    json = get_json("issues/#{issue_id}.json")
-
-    json["issue"][attribute_name.to_s]
-  end
 
   def get_custom_field(issue_id, custom_field_name)
     cf_hash_list = get_custom_fields(issue_id)

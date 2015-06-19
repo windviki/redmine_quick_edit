@@ -36,6 +36,8 @@ module QuickEdit
 
           element = find_element(:css, "#issue-#{issue_id} > td.subject")
           action.move_to(element).context_click(element).perform
+
+          QuickEditPage.new @driver, @base_url, @project, self
         end
 
         def find_quick_edit_menu_for_core_field(issue_id, attribute_name)
@@ -91,7 +93,7 @@ module QuickEdit
 
           quick_edit(issue_id, menu_selector, new_value)
 
-          IssuesPage.new @driver, @base_url, @project unless desire_alerting
+          self.class.open @driver, @base_url, @project unless desire_alerting
         end
 
         def quick_edit_clear_for_core_field(issue_id, attribute_name)
@@ -99,7 +101,7 @@ module QuickEdit
 
           quick_edit_clear(issue_id, menu_selector)
 
-          IssuesPage.new @driver, @base_url, @project
+          self.class.open @driver, @base_url, @project
         end
 
         def quick_edit_clear_for_custom_field(issue_id, custom_field_id)
@@ -107,7 +109,7 @@ module QuickEdit
 
           quick_edit_clear(issue_id, menu_selector)
 
-          IssuesPage.new @driver, @base_url, @project
+          self.class.open @driver, @base_url, @project
         end
 
         def build_menu_selector_for_core_field(attribute_name)
@@ -134,7 +136,7 @@ module QuickEdit
           submit_button = buttons.select {|button| button.text =~ /Submit/}
           submit_button.first.click
 
-          IssuesPage.new @driver, @base_url, @project unless desire_alerting
+          self.class.open @driver, @base_url, @project unless desire_alerting
         end
 
         def cancel_quick_edit
