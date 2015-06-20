@@ -56,28 +56,26 @@ function quick_edit_drag_and_drop_init() {
 }
 
 function quick_edit_drag_and_drop_enable(){
-  $("tr.issue").each( function () {
+  $("tr.issue.ui-draggable").each( function () {
     var issue = $(this);
-    if (issue.draggable) {
-      issue.draggable("enable");
-    }
-    if (issue.droppable) {
-      issue.droppable("enable");
-    }
+    issue.draggable("enable");
+  });
+  $("tr.issue.ui-droppable").each( function () {
+    var issue = $(this);
+    issue.droppable("enable");
   });
 
   quick_edit_log("issue d&d enabled.");
 }
 
 function quick_edit_drag_and_drop_disable(){
-  $("tr.issue").each( function () {
+  $("tr.issue.ui-draggable").each( function () {
     var issue = $(this);
-    if (issue.draggable) {
-      issue.draggable("disable");
-    }
-    if (issue.droppable) {
-      issue.droppable("disable");
-    }
+    issue.draggable("disable");
+  });
+  $("tr.issue.ui-droppable").each( function () {
+    var issue = $(this);
+    issue.droppable("disable");
   });
   
   quick_edit_log("issue d&d disabled.");
