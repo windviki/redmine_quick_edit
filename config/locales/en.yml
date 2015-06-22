@@ -2,7 +2,7 @@
 en:
   button_quick_edit: Quick Edit
   label_edit_subject: Subject
-  text_edit_confirm: Enter new value.
+  text_edit_confirm: Enter the new value.
   text_is_required: can't be empty.
   text_none_is_invalid: can't specify the 'none'.its a special value.
   text_invalid_format: invalid format.
