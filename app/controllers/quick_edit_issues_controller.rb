@@ -37,6 +37,12 @@ private
   # rails filter
   def check_target_specifier
     @target_specifier = params[:target_specifier]
+    if @target_specifier.nil?
+      logger.warn "### quick edit ### missing target specifier."
+      render_404
+      return
+    end
+
     parsed = parse_target_specifier(@target_specifier)
     if parsed.nil? || parsed.empty?
       logger.warn "### quick edit ### invalid target specifier. target_specifier=" + @target_specifier
