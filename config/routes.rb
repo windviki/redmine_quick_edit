@@ -10,5 +10,7 @@ RedmineApp::Application.routes.draw do
   end
 
   get 'quick_edit_issues/edit', :controller => 'quick_edit_issues', :action => 'edit'
+  get 'quick_edit_issues/replace_preview', :controller => 'quick_edit_issues', :action => 'replace_preview'
+  post 'quick_edit_issues/replace', :controller => 'quick_edit_issues', :action => 'replace'
 end
 

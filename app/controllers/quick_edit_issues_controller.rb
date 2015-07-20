@@ -3,6 +3,7 @@ class QuickEditIssuesController < ApplicationController
   before_filter :find_issues
   before_filter :check_first_issue
   before_filter :check_target_specifier
+  before_filter :check_replace_args, :only => [:replace, :replace_preview]
 
   def edit
     @dialog_params = nil
@@ -21,6 +22,26 @@ class QuickEditIssuesController < ApplicationController
     @dialog_params[:issue_ids] = params[:ids]
     @dialog_params[:back_url] = params[:back_url]
     @dialog_params[:default_value] = params[:default_value] unless (params[:default_value].nil?)
+  end
+
+  def replace_preview
+    @replaced_issues = @issues.map do |issue|
+      { :id  => issue.id,
+        :old => issue[@attribute_name],
+        :new => issue[@attribute_name].gsub(@find, @replace) }
+    end
+  end
+
+  def replace
+    Issue.transaction do
+      @issues.each do |issue|
+        logger.info "#{issue.id}"
+        issue.safe_attributes = {@attribute_name => issue[@attribute_name].gsub(@find, @replace)}
+        issue.save!
+      end
+    end
+
+    redirect_to params[:back_url]
   end
 
 private
@@ -47,12 +68,46 @@ private
     if parsed.nil? || parsed.empty?
       logger.warn "### quick edit ### invalid target specifier. target_specifier=" + @target_specifier
       render_404
+      return
     end
 
-    attribute_name = parsed[0]
-    unless @issue.safe_attribute_names.include?(attribute_name)
+    @attribute_name = parsed[0]
+    if parsed.size == 2
+      @custom_field_id = parsed[1]
+    else
+      @custom_field_id = ""
+    end
+    unless @issue.safe_attribute_names.include?(@attribute_name)
       logger.warn "### quick edit ### no safe attribute. target_specifier=" + @target_specifier
       render_404
+    end
+  end
+
+  def check_replace_args
+    unless @attribute_name.include?('subject')
+      logger.warn "### quick edit ### no support. target_specifier=" + @target_specifier
+      render_400
+      return
+    end
+
+    @find = params[:find]
+    if @find.nil? || @find == ""
+      logger.warn "### quick edit ### missing params[find]."
+      render_400
+      return
+    end
+
+    if @find.length > 127
+      logger.warn "### quick edit ### length over params[find]."
+      render_400
+      return
+    end
+
+    @replace = params[:replace]
+    if @replace.length > 127
+      logger.warn "### quick edit ### length over params[replace]."
+      render_400
+      return
     end
   end
 

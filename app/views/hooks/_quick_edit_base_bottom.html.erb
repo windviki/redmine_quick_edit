@@ -96,6 +96,61 @@ function quick_edit_get_issue_id_from_element(element) {
   return m[1];
 }
 
+function quick_edit_input_dialog_switch_page() {
+  var dialog = $("#quick_edit_input_dialog");
+
+  var switchers = dialog.find(".page-switcher");
+  switchers.toggle();
+
+  var pages = dialog.find(".page");
+  pages.toggle();
+
+  if (dialog.find("#replace_switcher:hidden").length == 1) {
+    dialog.dialog("option", "buttons",
+      [ { text: "Preview", click: quick_edit_input_dialog_preview_replace},
+        { text: "Submit", click: quick_edit_input_dialog_replace_submit},
+        { text: "Cancel", click: quick_edit_input_dialog_cancel}]);
+
+  } else {
+    dialog.dialog("option", "buttons",
+      [ { text: "Submit", click: quick_edit_input_dialog_edit_submit},
+        { text: "Cancel", click: quick_edit_input_dialog_cancel}]);
+  }
+}
+
+function quick_edit_input_dialog_preview_replace() {
+  var replace_page = $("#quick_edit_input_dialog #replace");
+
+  var target_specifier = replace_page.find("#target_specifier").val();
+  var find = replace_page.find("#find_value").val();
+  var replace = replace_page.find("#replace_value").val();
+  var ids = [];
+  replace_page.find("#ids").each( function () { ids.push($(this).val()); });
+  var url="<%= quick_edit_issues_replace_preview_path() %>";
+
+  if(find == "") {
+    alert('<%=l(:text_is_required)%>');
+    return;
+  }
+
+  $.ajax({
+     url: url,
+     data: {ids: ids, target_specifier: target_specifier, find: find, replace: replace},
+     dataType: 'script'});
+}
+
+function quick_edit_input_dialog_replace_submit() {
+  var replace_page = $("#quick_edit_input_dialog #replace");
+
+  var find = replace_page.find("#find_value").val();
+  if(find == "") {
+    alert('<%=l(:text_is_required)%>');
+    return;
+  }
+
+  replace_page.find("form").submit();
+}
+
 function quick_edit_input_dialog_open(){
   quick_edit_drag_and_drop_disable();
 }
@@ -112,12 +167,12 @@ function quick_edit_input_dialog_cancel(){
 function quick_edit_clear(){
 }
 
-function quick_edit_input_dialog_submit(){
-  var target_specifier = $("#quick_edit_input_dialog #target_specifier").val();
-  var new_value_element = $("#quick_edit_input_dialog #new_value");
-  var clr_value_element = $("#quick_edit_input_dialog #clear");
+function quick_edit_input_dialog_edit_submit(){
+  var target_specifier = $("#quick_edit_input_dialog #edit #target_specifier").val();
+  var new_value_element = $("#quick_edit_input_dialog #edit #new_value");
+  var clr_value_element = $("#quick_edit_input_dialog #edit #clear");
 
-  if ($("#quick_edit_input_dialog #clear:checked").length > 0){
+  if ($("#quick_edit_input_dialog #edit #clear:checked").length > 0){
     new_value_element.attr("name", "_quick_edit_tmp");
     clr_value_element.attr("name", target_specifier);
 
@@ -128,7 +183,7 @@ function quick_edit_input_dialog_submit(){
     var new_value = $("#quick_edit_input_dialog #new_value").val();
     if(new_value === null) return;
 
-    var pattern = new RegExp($("#quick_edit_input_dialog > form > div > #validation_pattern").val());
+    var pattern = new RegExp($("#quick_edit_input_dialog #edit #validation_pattern").val());
 
     if(new_value == "") {
       alert('<%=l(:text_is_required)%>');
@@ -144,7 +199,7 @@ function quick_edit_input_dialog_submit(){
   }
 
   var issue_ids = [];
-  $("#quick_edit_input_dialog > form > div > #ids").each(function (index,element) {
+  $("#quick_edit_input_dialog #edit #ids").each(function (index,element) {
     issue_ids.push($(this).val());
   });
   if(issue_ids.length>1){
@@ -152,15 +207,15 @@ function quick_edit_input_dialog_submit(){
   }
 
   var offsetY = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-  var back_url = $("#quick_edit_input_dialog #back_url").val();
+  var back_url = $("#quick_edit_input_dialog #edit #back_url").val();
   if (back_url.indexOf("?") == -1) {
     back_url = back_url + "?offsetY=" + offsetY;
   } else {
     back_url = back_url + "&offsetY=" + offsetY;
   }
-  $("#quick_edit_input_dialog #back_url").val(back_url);
+  $("#quick_edit_input_dialog #edit #back_url").val(back_url);
 
-  $("#quick_edit_input_dialog > form").submit();
+  $("#quick_edit_input_dialog #edit form").submit();
 }
 
 function quick_edit_show_new_relation_dialog(first_issue_id, second_issue_id, back_url){

@@ -1,0 +1,15 @@
+<table class="list issues">
+<thead>
+<tr>
+  <th>#</th><th>OLD</th><th>NEW</th>
+</tr>
+</thead>
+<tbody>
+<% @replaced_issues.each do |issue| %>
+<% cycle_class = cycle(:odd, :even) %>
+<tr class="issue">
+  <td class="id <%= cycle_class %>"><%= issue[:id] %></td><td class="<%= cycle_class %>"><%= issue[:old] %></td><td class="<%= cycle_class %>"><%= issue[:new] %></td>
+</tr>
+<% end %>
+</tbody>
+</table>
