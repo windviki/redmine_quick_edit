@@ -11,18 +11,18 @@
   <div id="tabs">
   <div style="float: right;">
     <ul>
-      <li id="edit_switcher" class="page-switcher" style="display:none; border-color: #bbb #bbb white; border-width:1px; border-style: solid; margin:3px; padding:3px;list-style:none; font-size: 0.8em;"><a href="#edit">EDIT</a></li>
-      <li id="replace_switcher" class="page-switcher" style="border-color: #bbb #bbb white; border-width:1px; border-style: solid; margin:3px; padding:3px; list-style:none;font-size: 0.8em;"><a href="#replace">REPLACE</a></li>
+      <li id="edit_switcher" class="page-switcher" style="display:none;"><a href="#edit">EDIT</a></li>
+      <li id="replace_switcher" class="page-switcher"><a href="#replace">REPLACE</a></li>
     </ul>
   </div>
-  <div id="edit" class="page" style="">
+  <div id="edit" class="page">
 
   <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
-  <div style="padding-top: 9px; padding-bottom: 15px; padding-left: 10px;">
-    <span style="vertical-align: middle; font-size: 1em;"><%= @dialog_params[:help_message] %></span><br>
-    <span style="vertical-align: middle; font-size: 0.85em;">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
+  <div class="header">
+    <span class="message"><%= @dialog_params[:help_message] %></span><br>
+    <span class="ids">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
   </div>
-  <div class="box" style="font-size: 0.9em; font-weight: normal; padding-left: 10px; padding-right: 10px; padding-bottom: 12px; margin-bottom:0px;">
+  <div class="box">
     <span><%= @dialog_params[:caption] %>:</span>
     <% case @dialog_params[:field_type] %>
     <% when :date %>
@@ -71,16 +71,11 @@
   </div>
   <div id="replace" class="page" style="display: none;">
     <%= form_tag({:controller=>'quick_edit_issues', :action=>:replace}) do %>
-    <input id="target_specifier" name="target_specifier" type="hidden" value="<%= @dialog_params[:target_specifier] %>"></input>
-    <input id="back_url" name="back_url" type="hidden" value="<%= @dialog_params[:back_url] %>"></input>
-    <% @dialog_params[:issue_ids].each do |id| %>
-    <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
-    <% end %>
-    <div style="padding-top: 9px; padding-bottom: 15px; padding-left: 10px;">
-      <span style="vertical-align: middle; font-size: 1em;"><%= @dialog_params[:help_message] %></span><br>
-      <span style="vertical-align: middle; font-size: 0.85em;">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
+    <div class="header">
+      <span class="message"><%= @dialog_params[:help_message] %></span><br>
+      <span class="ids">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
     </div>
-    <div class="box" style="font-size: 0.9em; font-weight: normal; padding-left: 10px; padding-right: 10px; padding-bottom: 12px; margin-bottom:0px;">
+    <div class="box">
       <span>Find what:</span>
       <input id="find_value"
              name="find_value"
@@ -93,10 +88,14 @@
              type="text"
              size="80"
              value="new"></input><br>
-      <br>
       <span>Preview:</span>
       <div id="preview_area" class="ui-corner-all box">&nbsp;</div>
     </div>
+    <input id="target_specifier" name="target_specifier" type="hidden" value="<%= @dialog_params[:target_specifier] %>"></input>
+    <input id="back_url" name="back_url" type="hidden" value="<%= @dialog_params[:back_url] %>"></input>
+    <% @dialog_params[:issue_ids].each do |id| %>
+    <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
+    <% end %>
     <% end %>
   </div>
 </div>
