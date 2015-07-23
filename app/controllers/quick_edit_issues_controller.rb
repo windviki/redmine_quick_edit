@@ -86,27 +86,27 @@ private
   def check_replace_args
     unless @attribute_name.include?('subject')
       logger.warn "### quick edit ### no support. target_specifier=" + @target_specifier
-      render_400
+      render_error :status => 400
       return
     end
 
-    @find = params[:find]
+    @find = params[:find_value]
     if @find.nil? || @find == ""
       logger.warn "### quick edit ### missing params[find]."
-      render_400
+      render_error :status => 400
       return
     end
 
     if @find.length > 127
       logger.warn "### quick edit ### length over params[find]."
-      render_400
+      render_error :status => 400
       return
     end
 
-    @replace = params[:replace]
+    @replace = params[:replace_value]
     if @replace.length > 127
       logger.warn "### quick edit ### length over params[replace]."
-      render_400
+      render_error :status => 400
       return
     end
   end
