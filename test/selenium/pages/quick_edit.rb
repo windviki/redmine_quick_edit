@@ -48,6 +48,51 @@ module QuickEdit
           @before_page.class.open @driver, @base_url, @project
         end
 
+        def preview_replace(issue_id, menu_selector, find_value, replace_value, desire_alerting = false)
+          menu_element = find_element(:id, "quick_edit_context")
+          menu_item_element = find_element(:css, menu_selector)
+          action.move_to(menu_element).click(menu_item_element).perform
+
+          click :id, :replace_switcher
+
+          input_text :id, :find_value, find_value
+          input_text :id, :replace_value, replace_value
+
+          buttons = find_elements(:css, "button > span")
+          submit_button = buttons.select {|button| button.text =~ /Preview/}
+          submit_button.first.click
+
+          @before_page.class.open @driver, @base_url, @project unless desire_alerting
+        end
+
+        def get_replace_preview()
+          rows = find_elements(:css, "preview_area tbody tr")
+
+          previews = rows.map do |row|
+            id = row.find_element(:class, ".id").text
+            old = row.find_element(:class, ".old").text
+            new = row.find_element(:class, ".new").text
+            { :id => id, :old => old, :new => new }
+          end
+        end
+
+        def replace(issue_id, menu_selector, find_value, replace_value, desire_alerting = false)
+          menu_element = find_element(:id, "quick_edit_context")
+          menu_item_element = find_element(:css, menu_selector)
+          action.move_to(menu_element).click(menu_item_element).perform
+
+          click :id, :replace_switcher
+
+          input_text :id, :find_value, find_value
+          input_text :id, :replace_value, replace_value
+
+          buttons = find_elements(:css, "button > span")
+          submit_button = buttons.select {|button| button.text =~ /Submit/}
+          submit_button.first.click
+
+          @before_page.class.open @driver, @base_url, @project unless desire_alerting
+        end
+
         def cancel_quick_edit
           button_elements = find_elements(:css, 'span.ui-button-text')
           cancel_buttons = button_elements.select do |button_element|

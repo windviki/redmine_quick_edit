@@ -8,7 +8,7 @@
 <% @replaced_issues.each do |issue| %>
 <% cycle_class = cycle(:odd, :even) %>
 <tr class="issue">
-  <td class="id <%= cycle_class %>"><%= issue[:id] %></td><td class="<%= cycle_class %>"><%= issue[:old] %></td><td class="<%= cycle_class %>"><%= issue[:new] %></td>
+  <td class="id <%= cycle_class %>"><%= issue[:id] %></td><td class="old <%= cycle_class %>"><%= issue[:old] %></td><td class="new <%= cycle_class %>"><%= issue[:new] %></td>
 </tr>
 <% end %>
 </tbody>
