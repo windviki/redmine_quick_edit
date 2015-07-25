@@ -92,20 +92,20 @@ private
 
     @find = params[:find_value]
     if @find.nil? || @find == ""
-      logger.warn "### quick edit ### missing params[find]."
+      logger.warn "### quick edit ### missing params[find_value]."
       render_error :status => 400
       return
     end
 
     if @find.length > 127
-      logger.warn "### quick edit ### length over params[find]."
+      logger.warn "### quick edit ### length over params[find_value]."
       render_error :status => 400
       return
     end
 
     @replace = params[:replace_value]
     if @replace.length > 127
-      logger.warn "### quick edit ### length over params[replace]."
+      logger.warn "### quick edit ### length over params[replace_value]."
       render_error :status => 400
       return
     end
