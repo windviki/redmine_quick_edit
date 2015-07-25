@@ -122,6 +122,7 @@ private
     help_message = get_field_help_message(field_type)
     clear_pseudo_value = nil
     clear_pseudo_value = 'none' if %w(parent_issue_id start_date due_date estimated_hours).include?(attribute_name)
+    replacable = %w(subject).include?(attribute_name)
 
     ret =
       { :attribute_name => attribute_name.to_sym,
@@ -131,7 +132,8 @@ private
         :default_value => default_value,
         :validation_pattern => validation_pattern,
         :help_message => help_message,
-        :clear_pseudo_value => clear_pseudo_value
+        :clear_pseudo_value => clear_pseudo_value,
+        :replacable => replacable
       }
   end
 
@@ -144,6 +146,7 @@ private
     default_value = "" if default_value.nil?
     validation_pattern = get_field_validation_pattern(field_type)
     help_message = get_field_help_message(field_type)
+    replacable = false
 
     ret =
       { :attribute_name => attribute_name.to_sym,
@@ -153,7 +156,8 @@ private
         :default_value => default_value,
         :validation_pattern => validation_pattern,
         :help_message => help_message,
-        :clear_pseudo_value => '__none__'
+        :clear_pseudo_value => '__none__',
+        :replacable => replacable
       }
   end
 

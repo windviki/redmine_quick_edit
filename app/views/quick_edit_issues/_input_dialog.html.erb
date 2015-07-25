@@ -11,12 +11,14 @@
   <!-- main begin -->
   <div>
     <!-- page switcher -->
+    <% if @dialog_params[:replacable] %>
     <div style="float: right;">
       <ul>
         <li id="edit_switcher" class="page-switcher" style="display:none;"><a href="#edit">EDIT</a></li>
         <li id="replace_switcher" class="page-switcher"><a href="#replace">REPLACE</a></li>
       </ul>
     </div>
+    <% end %>
 
     <div class="header">
       <span class="message"><%= @dialog_params[:help_message] %></span><br>
