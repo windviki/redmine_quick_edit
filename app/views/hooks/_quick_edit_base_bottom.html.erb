@@ -122,8 +122,8 @@ function quick_edit_input_dialog_preview_replace() {
   var replace_page = $("#quick_edit_input_dialog #replace");
 
   var target_specifier = replace_page.find("#target_specifier").val();
-  var find = replace_page.find("#find_value").val();
-  var replace = replace_page.find("#replace_value").val();
+  var find = replace_page.find("#find").val();
+  var replace = replace_page.find("#replace").val();
   var ids = [];
   replace_page.find("#ids").each( function () { ids.push($(this).val()); });
   var url="<%= quick_edit_issues_replace_preview_path() %>";
@@ -142,7 +142,7 @@ function quick_edit_input_dialog_preview_replace() {
 function quick_edit_input_dialog_replace_submit() {
   var replace_page = $("#quick_edit_input_dialog #replace");
 
-  var find = replace_page.find("#find_value").val();
+  var find = replace_page.find("#find").val();
   if(find == "") {
     alert('<%=l(:text_is_required)%>');
     return;
