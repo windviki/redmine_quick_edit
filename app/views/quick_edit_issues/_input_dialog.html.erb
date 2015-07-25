@@ -8,101 +8,107 @@
   textarea_size = parse_size(Setting.plugin_quick_edit['textarea_size'], 10...256, 80, 10...256, 10)
 %>
 <div id="quick_edit_input_dialog" title="Quick Edit - <%= @dialog_params[:caption] %>" style="background-color: white;">
-  <div id="tabs">
-  <div style="float: right;">
-    <ul>
-      <li id="edit_switcher" class="page-switcher" style="display:none;"><a href="#edit">EDIT</a></li>
-      <li id="replace_switcher" class="page-switcher"><a href="#replace">REPLACE</a></li>
-    </ul>
-  </div>
-  <div id="edit" class="page">
+  <!-- main begin -->
+  <div>
+    <!-- page switcher -->
+    <div style="float: right;">
+      <ul>
+        <li id="edit_switcher" class="page-switcher" style="display:none;"><a href="#edit">EDIT</a></li>
+        <li id="replace_switcher" class="page-switcher"><a href="#replace">REPLACE</a></li>
+      </ul>
+    </div>
 
-  <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
-  <div class="header">
-    <span class="message"><%= @dialog_params[:help_message] %></span><br>
-    <span class="ids">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
-  </div>
-  <div class="box">
-    <span><%= @dialog_params[:caption] %>:</span>
-    <% case @dialog_params[:field_type] %>
-    <% when :date %>
-    <input id="new_value"
-           type="text" 
-           size="15"
-           value="<%= @dialog_params[:default_value] %>"></input>
-    <%= calendar_for('new_value') %>
-    <% when :int, :float %>
-    <input id="new_value"
-           type="text" 
-           size="15"
-           value="<%= @dialog_params[:default_value] %>"></input>
-      <% if @dialog_params[:target_specifier] == "issue[parent_issue_id]" %>
-      <%= javascript_tag "observeAutocompleteField('new_value', '#{escape_javascript auto_complete_issues_path(:project_id => @issue.project, :scope => (Setting.cross_project_issue_relations? ? 'all' : nil))}')" %>
-      <%= javascript_tag "setPredecessorFieldsVisibility();" %>
-      <% end %>
-    <% when :text %>
-    <textarea id="new_value"
-           cols="<%= textarea_size[0] %>"
-           rows="<%= textarea_size[1] %>"
-           style="vertical-align:middle;"><%= @dialog_params[:default_value] %></textarea>
-    <% if @dialog_params[:attribute_name].to_sym == :description %>
-    <%= wikitoolbar_for 'new_value' %>
-    <% end %>
-    <% else %>
-    <input id="new_value"
-           type="text"
-           size="80"
-           value="<%= @dialog_params[:default_value] %>"></input>
-         <% end %>
-    <% unless @dialog_params[:clear_pseudo_value].nil? %>
-      <input id="clear" name="clear" type="checkbox" value="<%= @dialog_params[:clear_pseudo_value] %>" data-disables="#new_value"><%= l(:button_clear) %></input>
-    <% end %>
-    <% if !@dialog_params[:description].nil? %>
-    <pre style="border: 1px solid #e0e0e0; padding: 3px; overflow:auto; height: 2.8em; margin-top: 10px; margin-bottom: 0px;"><%= @dialog_params[:description] %></pre>
-    <% end %>
-    <% @dialog_params[:issue_ids].each do |id| %>
-    <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
-    <% end %>
-    <input id="target_specifier" name="target_specifier" type="hidden" value="<%= @dialog_params[:target_specifier] %>"></input>
-    <input id="back_url" name="back_url" type="hidden" value="<%= @dialog_params[:back_url] %>"></input>
-    <input id="validation_pattern" type="hidden" value="<%= @dialog_params[:validation_pattern] %>"></input>
-  </div>
-<% end %>
-  </div>
-  <div id="replace" class="page" style="display: none;">
-    <%= form_tag({:controller=>'quick_edit_issues', :action=>:replace}) do %>
     <div class="header">
       <span class="message"><%= @dialog_params[:help_message] %></span><br>
       <span class="ids">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
     </div>
-    <div class="box">
-      <span>Find what:</span>
-      <input id="find_value"
-             name="find_value"
-             type="text"
-             size="80"
-             value="first"></input><br>
-      <span>Replace with:</span>
-      <input id="replace_value"
-             name="replace_value"
-             type="text"
-             size="80"
-             value="new"></input><br>
-      <span>Preview:</span>
-      <div id="preview_area" class="ui-corner-all box">&nbsp;</div>
+
+    <!-- pages  -->
+    <div id="edit" class="page">
+
+      <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
+      <div class="box">
+        <span><%= @dialog_params[:caption] %>:</span>
+        <% case @dialog_params[:field_type] %>
+        <% when :date %>
+        <input id="new_value"
+               type="text" 
+               size="15"
+               value="<%= @dialog_params[:default_value] %>"></input>
+        <%= calendar_for('new_value') %>
+        <% when :int, :float %>
+        <input id="new_value"
+               type="text" 
+               size="15"
+               value="<%= @dialog_params[:default_value] %>"></input>
+          <% if @dialog_params[:target_specifier] == "issue[parent_issue_id]" %>
+          <%= javascript_tag "observeAutocompleteField('new_value', '#{escape_javascript auto_complete_issues_path(:project_id => @issue.project, :scope => (Setting.cross_project_issue_relations? ? 'all' : nil))}')" %>
+          <%= javascript_tag "setPredecessorFieldsVisibility();" %>
+          <% end %>
+        <% when :text %>
+        <textarea id="new_value"
+               cols="<%= textarea_size[0] %>"
+               rows="<%= textarea_size[1] %>"
+               style="vertical-align:middle;"><%= @dialog_params[:default_value] %></textarea>
+        <% if @dialog_params[:attribute_name].to_sym == :description %>
+        <%= wikitoolbar_for 'new_value' %>
+        <% end %>
+        <% else %>
+        <input id="new_value"
+               type="text"
+               size="80"
+               value="<%= @dialog_params[:default_value] %>"></input>
+             <% end %>
+        <% unless @dialog_params[:clear_pseudo_value].nil? %>
+          <input id="clear" name="clear" type="checkbox" value="<%= @dialog_params[:clear_pseudo_value] %>" data-disables="#new_value"><%= l(:button_clear) %></input>
+        <% end %>
+        <% if !@dialog_params[:description].nil? %>
+        <pre style="border: 1px solid #e0e0e0; padding: 3px; overflow:auto; height: 2.8em; margin-top: 10px; margin-bottom: 0px;"><%= @dialog_params[:description] %></pre>
+        <% end %>
+        <% @dialog_params[:issue_ids].each do |id| %>
+        <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
+        <% end %>
+        <input id="target_specifier" name="target_specifier" type="hidden" value="<%= @dialog_params[:target_specifier] %>"></input>
+        <input id="back_url" name="back_url" type="hidden" value="<%= @dialog_params[:back_url] %>"></input>
+        <input id="validation_pattern" type="hidden" value="<%= @dialog_params[:validation_pattern] %>"></input>
+      </div>
+      <% end %>
     </div>
-    <input id="target_specifier" name="target_specifier" type="hidden" value="<%= @dialog_params[:target_specifier] %>"></input>
-    <input id="back_url" name="back_url" type="hidden" value="<%= @dialog_params[:back_url] %>"></input>
-    <% @dialog_params[:issue_ids].each do |id| %>
-    <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
-    <% end %>
-    <% end %>
+
+    <div id="replace" class="page" style="display: none;">
+      <%= form_tag({:controller=>'quick_edit_issues', :action=>:replace}) do %>
+      <div class="box">
+        <span>Find what:</span><br/>
+        <input id="find_value"
+               name="find_value"
+               type="text"
+               size="80"
+               value="first"></input><br/>
+        <span>Replace with:</span><br/>
+        <input id="replace_value"
+               name="replace_value"
+               type="text"
+               size="80"
+               value="new"></input><br/>
+        <span>Preview:</span>
+        <div id="preview_area" class="ui-corner-all box">&nbsp;</div>
+      </div>
+      <input id="target_specifier" name="target_specifier" type="hidden" value="<%= @dialog_params[:target_specifier] %>"></input>
+      <input id="back_url" name="back_url" type="hidden" value="<%= @dialog_params[:back_url] %>"></input>
+      <% @dialog_params[:issue_ids].each do |id| %>
+      <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
+      <% end %>
+      <% end %>
+    </div>
+
   </div>
-</div>
-  <div style="color:#a0a0a0; text-align: right; margin-top: 3px; padding-top: 12px; line-height: 1.0em;">
+  <!-- main end -->
+
+  <!-- footer -->
+  <div class="footer">
     <span>QUICK EDIT</span><br>
     <span style="font-size: 9px;">http://osdn.jp/projects/quickedit/</span>
-</div>
+  </div>
 </div>
 
 <script>
