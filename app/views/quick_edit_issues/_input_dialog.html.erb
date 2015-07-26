@@ -4,26 +4,27 @@
   dialog_size[1] += 134 if @dialog_params[:field_type] == :text
   dialog_size[1] += 31 if @dialog_params[:attribute_name]==:description
   dialog_size[1] += 50 unless @dialog_params[:description].nil?
+  dialog_size[1] += 50 if @dialog_params[:replacable]
 
   textarea_size = parse_size(Setting.plugin_quick_edit['textarea_size'], 10...256, 80, 10...256, 10)
 %>
 <div id="quick_edit_input_dialog" title="Quick Edit - <%= @dialog_params[:caption] %>">
   <!-- main begin -->
   <div>
-    <!-- page switcher -->
-    <% if @dialog_params[:replacable] %>
-    <div style="float: right;">
-      <ul>
-        <li id="edit_switcher" class="page-switcher" style="display:none;"><a>EDIT</a></li>
-        <li id="replace_switcher" class="page-switcher"><a>REPLACE</a></li>
-      </ul>
-    </div>
-    <% end %>
-
     <div class="header">
       <span class="message"><%= @dialog_params[:help_message] %></span><br>
       <span class="ids">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
     </div>
+
+    <!-- page switcher -->
+    <% if @dialog_params[:replacable] %>
+    <div class="page-switchers">
+      <ul>
+        <li id="edit_switcher" class="page-switcher" style="display:none;"><a>&lt;&lt; EDIT</a></li>
+        <li id="replace_switcher" class="page-switcher"><a>REPLACE &gt;&gt;</a></li>
+      </ul>
+    </div>
+    <% end %>
 
     <!-- pages  -->
     <div id="edit-page" class="page">

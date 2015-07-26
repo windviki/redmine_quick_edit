@@ -1,19 +1,37 @@
 <% include_calendar_headers_tags %>
 <% heads_for_wiki_formatter %>
 <style>
+#quick_edit_input_dialog {
+  background-color: white;
+}
+
+#quick_edit_input_dialog .page-switchers {
+  padding: 5px;
+  margin: 0px;
+  text-align: right;
+}
+
+#quick_edit_input_dialog .page-switchers ul {
+  padding: 0px;
+  margin: 0px;
+}
+
 #quick_edit_input_dialog .page-switcher {
-  border-color: #bbb #bbb white;
-  border-width: 1px;
-  border-style: solid;
-  margin: 3px;
-  padding: 3px;
   list-style: none;
   font-size: 0.8em;
 }
 
+#quick_edit_input_dialog .page-switcher a, #quick_edit_input_dialog .page-switcher a:visited {
+  color: #169;
+}
+
+#quick_edit_input_dialog .page-switcher a:hover {
+  color: #C61A1A;
+}
+
 #quick_edit_input_dialog .header {
   padding-top: 9px;
-  padding-bottom: 15px;
+  padding-bottom: 9px;
   padding-left: 10px;
 }
 
@@ -34,10 +52,6 @@
   padding-right: 10px;
   padding-bottom: 12px;
   margin-bottom: 0px;
-}
-
-#quick_edit_input_dialog th {
-  font-size: 0.9em;
 }
 
 #quick_edit_input_dialog .footer {
