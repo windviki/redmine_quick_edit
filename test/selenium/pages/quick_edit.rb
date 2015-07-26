@@ -55,8 +55,8 @@ module QuickEdit
 
           click :id, :replace_switcher
 
-          input_text :id, :find_value, find_value
-          input_text :id, :replace_value, replace_value
+          input_text :id, :find, find_value
+          input_text :id, :replace, replace_value
 
           buttons = find_elements(:css, "button > span")
           submit_button = buttons.select {|button| button.text =~ /Preview/}
@@ -83,8 +83,8 @@ module QuickEdit
 
           click :id, :replace_switcher
 
-          input_text :id, :find_value, find_value
-          input_text :id, :replace_value, replace_value
+          input_text :id, :find, find_value
+          input_text :css, "#quick_edit_input_dialog #replace", replace_value
 
           buttons = find_elements(:css, "button > span")
           submit_button = buttons.select {|button| button.text =~ /Submit/}

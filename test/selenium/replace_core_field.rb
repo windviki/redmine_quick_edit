@@ -56,6 +56,11 @@ describe "Replace core field" do
     replace = 'new'
     expect( replace(@issue_id, :subject, find, replace) ).to eq new_value
 
+    new_value = "new<>\'\"&+% text"
+    find = ' '
+    replace = "<>\'\"&+% "
+    expect( replace(@issue_id, :subject, find, replace) ).to eq new_value
+
     find = ''
     replace = ''
     expect( replace_with_alert(@issue_id, :subject, find, replace) ).to eq new_value
