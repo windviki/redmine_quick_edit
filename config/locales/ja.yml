@@ -1,7 +1,12 @@
 # Japanese strings go here for Rails i18n
 ja:
   button_quick_edit: Quick Edit
+
   label_edit_subject: 題名
+  label_find_with: 検索する文字列
+  label_replace_with: 置換後の文字列
+  label_preview: プレビュー
+
   text_edit_confirm: 新しい値を入力してください。
   text_is_required: 値の入力が必要です。
   text_none_is_invalid: noneは特別な意味を持つため指定できません。

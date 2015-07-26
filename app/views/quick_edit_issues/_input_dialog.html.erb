@@ -81,19 +81,19 @@
     <div id="replace-page" class="page" style="display: none;">
       <%= form_tag({:controller=>'quick_edit_issues', :action=>:replace}) do %>
       <div class="box">
-        <span>Find what:</span><br/>
+        <span><%= l(:label_find_with) %>:</span><br/>
         <input id="find"
                name="find"
                type="text"
                size="80"
                value=""></input><br/>
-        <span>Replace with:</span><br/>
+        <span><%= l(:label_replace_with) %>:</span><br/>
         <input id="replace"
                name="replace"
                type="text"
                size="80"
                value=""></input><br/>
-        <span>Preview:</span>
+        <span><%= l(:label_preview) %>:</span>
         <div id="preview_area" class="ui-corner-all box">&nbsp;</div>
       </div>
       <input id="target_specifier" name="target_specifier" type="hidden" value="<%= @dialog_params[:target_specifier] %>"></input>
