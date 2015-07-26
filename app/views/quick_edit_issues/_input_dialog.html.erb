@@ -7,15 +7,15 @@
 
   textarea_size = parse_size(Setting.plugin_quick_edit['textarea_size'], 10...256, 80, 10...256, 10)
 %>
-<div id="quick_edit_input_dialog" title="Quick Edit - <%= @dialog_params[:caption] %>" style="background-color: white;">
+<div id="quick_edit_input_dialog" title="Quick Edit - <%= @dialog_params[:caption] %>">
   <!-- main begin -->
   <div>
     <!-- page switcher -->
     <% if @dialog_params[:replacable] %>
     <div style="float: right;">
       <ul>
-        <li id="edit_switcher" class="page-switcher" style="display:none;"><a href="#edit">EDIT</a></li>
-        <li id="replace_switcher" class="page-switcher"><a href="#replace">REPLACE</a></li>
+        <li id="edit_switcher" class="page-switcher" style="display:none;"><a>EDIT</a></li>
+        <li id="replace_switcher" class="page-switcher"><a>REPLACE</a></li>
       </ul>
     </div>
     <% end %>
@@ -26,7 +26,7 @@
     </div>
 
     <!-- pages  -->
-    <div id="edit" class="page">
+    <div id="edit-page" class="page">
 
       <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
       <div class="box">
@@ -77,7 +77,7 @@
       <% end %>
     </div>
 
-    <div id="replace" class="page" style="display: none;">
+    <div id="replace-page" class="page" style="display: none;">
       <%= form_tag({:controller=>'quick_edit_issues', :action=>:replace}) do %>
       <div class="box">
         <span>Find what:</span><br/>
@@ -85,13 +85,13 @@
                name="find"
                type="text"
                size="80"
-               value="first"></input><br/>
+               value=""></input><br/>
         <span>Replace with:</span><br/>
         <input id="replace"
                name="replace"
                type="text"
                size="80"
-               value="new"></input><br/>
+               value=""></input><br/>
         <span>Preview:</span>
         <div id="preview_area" class="ui-corner-all box">&nbsp;</div>
       </div>

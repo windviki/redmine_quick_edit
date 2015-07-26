@@ -119,7 +119,7 @@ function quick_edit_input_dialog_switch_page() {
 }
 
 function quick_edit_input_dialog_preview_replace() {
-  var replace_page = $("#quick_edit_input_dialog #replace");
+  var replace_page = $("#quick_edit_input_dialog #replace-page");
 
   var target_specifier = replace_page.find("#target_specifier").val();
   var find = replace_page.find("#find").val();
@@ -140,7 +140,7 @@ function quick_edit_input_dialog_preview_replace() {
 }
 
 function quick_edit_input_dialog_replace_submit() {
-  var replace_page = $("#quick_edit_input_dialog #replace");
+  var replace_page = $("#quick_edit_input_dialog #replace-page");
 
   var find = replace_page.find("#find").val();
   if(find == "") {
@@ -168,11 +168,13 @@ function quick_edit_clear(){
 }
 
 function quick_edit_input_dialog_edit_submit(){
-  var target_specifier = $("#quick_edit_input_dialog #edit #target_specifier").val();
-  var new_value_element = $("#quick_edit_input_dialog #edit #new_value");
-  var clr_value_element = $("#quick_edit_input_dialog #edit #clear");
+  var edit_page = $("#quick_edit_input_dialog #edit-page");
 
-  if ($("#quick_edit_input_dialog #edit #clear:checked").length > 0){
+  var target_specifier = edit_page.find("#target_specifier").val();
+  var new_value_element = edit_page.find("#new_value");
+  var clr_value_element = edit_page.find("#clear");
+
+  if (edit_page.find("#clear:checked").length > 0){
     new_value_element.attr("name", "_quick_edit_tmp");
     clr_value_element.attr("name", target_specifier);
 
@@ -180,10 +182,10 @@ function quick_edit_input_dialog_edit_submit(){
     new_value_element.attr("name", target_specifier);
     clr_value_element.attr("name", "_quick_edit_tmp");
 
-    var new_value = $("#quick_edit_input_dialog #new_value").val();
+    var new_value = edit_page.find("#new_value").val();
     if(new_value === null) return;
 
-    var pattern = new RegExp($("#quick_edit_input_dialog #edit #validation_pattern").val());
+    var pattern = new RegExp(edit_page.find("#validation_pattern").val());
 
     if(new_value == "") {
       alert('<%=l(:text_is_required)%>');
@@ -199,7 +201,7 @@ function quick_edit_input_dialog_edit_submit(){
   }
 
   var issue_ids = [];
-  $("#quick_edit_input_dialog #edit #ids").each(function (index,element) {
+  edit_page.find("#ids").each(function (index,element) {
     issue_ids.push($(this).val());
   });
   if(issue_ids.length>1){
@@ -207,15 +209,15 @@ function quick_edit_input_dialog_edit_submit(){
   }
 
   var offsetY = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-  var back_url = $("#quick_edit_input_dialog #edit #back_url").val();
+  var back_url = edit_page.find("#back_url").val();
   if (back_url.indexOf("?") == -1) {
     back_url = back_url + "?offsetY=" + offsetY;
   } else {
     back_url = back_url + "&offsetY=" + offsetY;
   }
-  $("#quick_edit_input_dialog #edit #back_url").val(back_url);
+  edit_page.find("#back_url").val(back_url);
 
-  $("#quick_edit_input_dialog #edit form").submit();
+  edit_page.find("form").submit();
 }
 
 function quick_edit_show_new_relation_dialog(first_issue_id, second_issue_id, back_url){
