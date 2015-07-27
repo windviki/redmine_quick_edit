@@ -96,6 +96,7 @@ private
       render_error :status => 400
       return
     end
+    @find = Regexp.escape(@find)
 
     if @find.length > 127
       logger.warn "### quick edit ### length over params[find]."
@@ -109,6 +110,7 @@ private
       render_error :status => 400
       return
     end
+    @replace = Regexp.escape(@replace)
   end
 
   def get_input_dialog_params_for_core_fields(issue, target_specifier)
