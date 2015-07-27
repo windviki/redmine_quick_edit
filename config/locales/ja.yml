@@ -5,6 +5,7 @@ ja:
   label_edit_subject: 題名
   label_find_with: 検索する文字列
   label_replace_with: 置換後の文字列
+  label_match_case: 大文字と小文字を区別する
   label_preview: プレビュー
 
   text_edit_confirm: 新しい値を入力してください。

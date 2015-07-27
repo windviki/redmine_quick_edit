@@ -5,6 +5,7 @@ en:
   label_edit_subject: Subject
   label_find_with: Find with
   label_replace_with: Replace with
+  label_match_case: Match case
   label_preview: Preview
 
   text_edit_confirm: Enter the new value.

@@ -4,7 +4,7 @@
   dialog_size[1] += 134 if @dialog_params[:field_type] == :text
   dialog_size[1] += 31 if @dialog_params[:attribute_name]==:description
   dialog_size[1] += 50 unless @dialog_params[:description].nil?
-  dialog_size[1] += 60 if @dialog_params[:replacable]
+  dialog_size[1] += 140 if @dialog_params[:replacable]
 
   textarea_size = parse_size(Setting.plugin_quick_edit['textarea_size'], 10...256, 80, 10...256, 10)
 %>
@@ -93,6 +93,13 @@
                type="text"
                size="80"
                value=""></input><br/>
+        <div class="options">
+          <input id="match_case"
+                 name="match_case"
+                 type="checkbox"
+                 value="true"></input>
+          <span><%= l(:label_match_case) %></span>
+        </div>
         <span><%= l(:label_preview) %>:</span>
         <div id="preview_area" class="ui-corner-all box">&nbsp;</div>
       </div>

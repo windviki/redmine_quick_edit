@@ -124,6 +124,7 @@ function quick_edit_input_dialog_preview_replace() {
   var target_specifier = replace_page.find("#target_specifier").val();
   var find = replace_page.find("#find").val();
   var replace = replace_page.find("#replace").val();
+  var match_case = replace_page.find("#match_case:checked").val();
   var ids = [];
   replace_page.find("#ids").each( function () { ids.push($(this).val()); });
   var url="<%= quick_edit_issues_replace_preview_path() %>";
@@ -135,7 +136,7 @@ function quick_edit_input_dialog_preview_replace() {
 
   $.ajax({
      url: url,
-     data: {ids: ids, target_specifier: target_specifier, find: find, replace: replace},
+     data: {ids: ids, target_specifier: target_specifier, find: find, replace: replace, match_case: match_case},
      dataType: 'script'});
 }
 

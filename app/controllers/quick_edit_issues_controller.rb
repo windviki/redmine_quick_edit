@@ -28,7 +28,7 @@ class QuickEditIssuesController < ApplicationController
     @replaced_issues = @issues.map do |issue|
       { :id  => issue.id,
         :old => issue[@attribute_name],
-        :new => issue[@attribute_name].gsub(@find, @replace) }
+        :new => issue[@attribute_name].gsub(@find_regexp, @replace) }
     end
   end
 
@@ -36,7 +36,7 @@ class QuickEditIssuesController < ApplicationController
     Issue.transaction do
       @issues.each do |issue|
         logger.info "#{issue.id}"
-        issue.safe_attributes = {@attribute_name => issue[@attribute_name].gsub(@find, @replace)}
+        issue.safe_attributes = {@attribute_name => issue[@attribute_name].gsub(@find_exp, @replace)}
         issue.save!
       end
     end
@@ -90,19 +90,25 @@ private
       return
     end
 
+    options = 0
+    match_case = params[:match_case]
+    unless match_case.nil? || match_case.empty?
+      options = Regexp::IGNORECASE
+    end
+
     @find = params[:find]
     if @find.nil? || @find == ""
       logger.warn "### quick edit ### missing params[find]."
       render_error :status => 400
       return
     end
-    @find = Regexp.escape(@find)
 
     if @find.length > 127
       logger.warn "### quick edit ### length over params[find]."
       render_error :status => 400
       return
     end
+    @find_regexp = Regexp.new(Regexp.escape(@find), options)
 
     @replace = params[:replace]
     if @replace.length > 127
