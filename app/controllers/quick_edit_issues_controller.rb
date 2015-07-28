@@ -35,8 +35,7 @@ class QuickEditIssuesController < ApplicationController
   def replace
     Issue.transaction do
       @issues.each do |issue|
-        logger.info "#{issue.id}"
-        issue.safe_attributes = {@attribute_name => issue[@attribute_name].gsub(@find_exp, @replace)}
+        issue.safe_attributes = {@attribute_name => issue[@attribute_name].gsub(@find_regexp, @replace)}
         issue.save!
       end
     end
@@ -83,6 +82,7 @@ private
     end
   end
 
+  # rails filter
   def check_replace_args
     unless @attribute_name.include?('subject')
       logger.warn "### quick edit ### no support. target_specifier=" + @target_specifier
@@ -116,7 +116,7 @@ private
       render_error :status => 400
       return
     end
-    @replace = Regexp.escape(@replace)
+    @replace = @replace.gsub(/\\/, '\\\\\\\\')
   end
 
   def get_input_dialog_params_for_core_fields(issue, target_specifier)
