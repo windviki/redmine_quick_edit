@@ -92,6 +92,8 @@ module QuickEdit
           submit_button = buttons.select {|button| button.text =~ /Submit/}
           submit_button.first.click
 
+          alert.accept unless desire_alerting
+
           @before_page.class.open @driver, @base_url, @project unless desire_alerting
         end
 

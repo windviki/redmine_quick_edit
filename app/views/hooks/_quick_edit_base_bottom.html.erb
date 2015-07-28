@@ -149,6 +149,10 @@ function quick_edit_input_dialog_replace_submit() {
     return;
   }
 
+  if (!confirm('<%= l(:text_are_you_sure) %>')) {
+    return;
+  }
+
   replace_page.find("form").submit();
 }
 
