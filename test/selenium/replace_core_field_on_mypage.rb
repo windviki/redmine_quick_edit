@@ -30,7 +30,7 @@ describe "Replace core field" do
 
     # create issue for test
     issue_new_page = @issues_page.open_new_page()
-    issue_show_page = issue_new_page.create(:bug, 'first subject')
+    issue_show_page = issue_new_page.create(:bug, 'initial text')
     @issue_id = issue_show_page.id
 
   end
@@ -48,9 +48,6 @@ describe "Replace core field" do
   end
   
   it "subject can replace" do
-    new_value = 'initial text'
-    expect( edit(@issue_id, :subject, new_value) ).to eq new_value
-
     new_value = 'new text'
     find = 'initial'
     replace = 'new'
@@ -84,7 +81,7 @@ describe "Replace core field" do
   def replace(issue_id, attribute_name, find, replace)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
-    @issues_page = quick_edit.replace(issue_id, menu_selector, find, replace)
+    @issues_page = quick_edit.replace(issue_id, menu_selector, find, replace, false)
 
     attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)
@@ -99,7 +96,7 @@ describe "Replace core field" do
   def replace_with_alert(issue_id, attribute_name, find, replace)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
-    quick_edit.replace(issue_id, menu_selector, find, replace, true)
+    quick_edit.replace(issue_id, menu_selector, find, replace, false, true)
     quick_edit.alert.accept
     quick_edit.cancel_quick_edit
 

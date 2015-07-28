@@ -48,7 +48,7 @@ module QuickEdit
           @before_page.class.open @driver, @base_url, @project
         end
 
-        def preview_replace(issue_id, menu_selector, find_value, replace_value, desire_alerting = false)
+        def preview_replace(issue_id, menu_selector, find_value, replace_value, match_case, desire_alerting = false)
           menu_element = find_element(:id, "quick_edit_context")
           menu_item_element = find_element(:css, menu_selector)
           action.move_to(menu_element).click(menu_item_element).perform
@@ -57,6 +57,7 @@ module QuickEdit
 
           input_text :id, :find, find_value
           input_text :id, :replace, replace_value
+          click :id, :match_case if match_case
 
           buttons = find_elements(:css, "button > span")
           submit_button = buttons.select {|button| button.text =~ /Preview/}
@@ -76,7 +77,7 @@ module QuickEdit
           end
         end
 
-        def replace(issue_id, menu_selector, find_value, replace_value, desire_alerting = false)
+        def replace(issue_id, menu_selector, find_value, replace_value, match_case, desire_alerting = false)
           menu_element = find_element(:id, "quick_edit_context")
           menu_item_element = find_element(:css, menu_selector)
           action.move_to(menu_element).click(menu_item_element).perform
@@ -85,6 +86,7 @@ module QuickEdit
 
           input_text :id, :find, find_value
           input_text :css, "#quick_edit_input_dialog #replace", replace_value
+          click :id, :match_case if match_case
 
           buttons = find_elements(:css, "button > span")
           submit_button = buttons.select {|button| button.text =~ /Submit/}

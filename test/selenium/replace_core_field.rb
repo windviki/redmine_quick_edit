@@ -30,7 +30,7 @@ describe "Replace core field" do
 
     # create issue for test
     issue_new_page = @issues_page.open_new_page()
-    issue_show_page = issue_new_page.create(:bug, 'first subject')
+    issue_show_page = issue_new_page.create(:bug, 'initial text')
     @issue_id = issue_show_page.id
 
   end
@@ -48,22 +48,37 @@ describe "Replace core field" do
   end
   
   it "subject can replace" do
-    new_value = 'initial text'
-    expect( edit(@issue_id, :subject, new_value) ).to eq new_value
-
-    new_value = 'new text'
+    new_value = 'NEW text'
     find = 'initial'
-    replace = 'new'
-    expect( replace(@issue_id, :subject, find, replace) ).to eq new_value
+    replace = 'NEW'
+    match_case = false
+    expect( replace(@issue_id, :subject, find, replace, match_case) ).to eq new_value
 
-    new_value = "new<>\'\"&+% text"
+    # match case test: to lower
+    new_value = 'new text'
+    find = 'new'
+    replace = 'new'
+    match_case = true
+    expect( replace(@issue_id, :subject, find, replace, match_case) ).to eq new_value
+
+    # special chars test
+    new_value = "new<>\'\"&\\+ %text"
     find = ' '
-    replace = "<>\'\"&+% "
-    expect( replace(@issue_id, :subject, find, replace) ).to eq new_value
+    replace = "<>\'\"&\\+ %"
+    match_case = false
+    expect( replace(@issue_id, :subject, find, replace, match_case) ).to eq new_value
+
+    # escape test for meta character of regexp pattern
+    new_value = "new<>\'\"&\\++ %text"
+    find = '\\'
+    replace = "\\+"
+    match_case = false
+    expect( replace(@issue_id, :subject, find, replace, match_case) ).to eq new_value
 
     find = ''
     replace = ''
-    expect( replace_with_alert(@issue_id, :subject, find, replace) ).to eq new_value
+    match_case = false
+    expect( replace_with_alert(@issue_id, :subject, find, replace, match_case) ).to eq new_value
   end
 
   def edit(issue_id, attribute_name, new_value)
@@ -81,10 +96,10 @@ describe "Replace core field" do
     end
   end
 
-  def replace(issue_id, attribute_name, find, replace)
+  def replace(issue_id, attribute_name, find, replace, match_case)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
-    @issues_page = quick_edit.replace(issue_id, menu_selector, find, replace)
+    @issues_page = quick_edit.replace(issue_id, menu_selector, find, replace, match_case)
 
     attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)
@@ -96,10 +111,10 @@ describe "Replace core field" do
     end
   end
 
-  def replace_with_alert(issue_id, attribute_name, find, replace)
+  def replace_with_alert(issue_id, attribute_name, find, replace, match_case)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
-    quick_edit.replace(issue_id, menu_selector, find, replace, true)
+    quick_edit.replace(issue_id, menu_selector, find, replace, match_case, true)
     quick_edit.alert.accept
     quick_edit.cancel_quick_edit
 
