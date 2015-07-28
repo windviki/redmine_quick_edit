@@ -106,12 +106,14 @@ function quick_edit_input_dialog_switch_page() {
   pages.toggle();
 
   if (dialog.find("#replace_switcher:hidden").length == 1) {
+    dialog.find("#find").focus();
     dialog.dialog("option", "buttons",
       [ { text: "Preview", click: quick_edit_input_dialog_preview_replace},
         { text: "Submit", click: quick_edit_input_dialog_replace_submit},
         { text: "Cancel", click: quick_edit_input_dialog_cancel}]);
 
   } else {
+    dialog.find("#new_value").focus();
     dialog.dialog("option", "buttons",
       [ { text: "Submit", click: quick_edit_input_dialog_edit_submit},
         { text: "Cancel", click: quick_edit_input_dialog_cancel}]);
