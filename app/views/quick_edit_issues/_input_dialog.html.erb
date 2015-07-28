@@ -13,7 +13,7 @@
   <div>
     <div class="header">
       <span class="message"><%= @dialog_params[:help_message] %></span><br>
-      <span class="ids">for: <% @issues.each do |issue| %><%= "\##{issue.id}" %>&nbsp;<% end %></span>
+      <span class="ids">for: <% @issues.each do |issue| %><%= link_to("\##{issue.id}", issue_path(issue), :class => :issue) %>&nbsp;<% end %></span>
     </div>
 
     <!-- page switcher -->
