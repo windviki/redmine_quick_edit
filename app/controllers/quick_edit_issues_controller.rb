@@ -27,8 +27,8 @@ class QuickEditIssuesController < ApplicationController
   def replace_preview
     @replaced_issues = @issues.map do |issue|
       { :id  => issue.id,
-        :old => issue[@attribute_name],
-        :new => issue[@attribute_name].gsub(@find_regexp, @replace) }
+        :before => issue[@attribute_name],
+        :after => issue[@attribute_name].gsub(@find_regexp, @replace) }
     end
   end
 

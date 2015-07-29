@@ -1,14 +1,14 @@
 <table class="list issues">
 <thead>
 <tr>
-  <th>#</th><th>OLD</th><th>NEW</th>
+  <th class="id">#</th><th class="before">Before</th><th class="after">After</th>
 </tr>
 </thead>
 <tbody>
 <% @replaced_issues.each do |issue| %>
 <% cycle_class = cycle(:odd, :even) %>
 <tr class="issue">
-  <td class="id <%= cycle_class %>"><%= issue[:id] %></td><td class="old <%= cycle_class %>"><%= issue[:old] %></td><td class="new <%= cycle_class %>"><%= issue[:new] %></td>
+  <td class="id <%= cycle_class %>"><%= issue[:id] %></td><td class="before <%= cycle_class %>"><%= issue[:before] %></td><td class="after <%= cycle_class %>"><%= issue[:after] %></td>
 </tr>
 <% end %>
 </tbody>
