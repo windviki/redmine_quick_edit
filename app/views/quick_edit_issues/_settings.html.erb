@@ -23,4 +23,10 @@
     <td>
     </td>
 	</tr>
+  <tr>
+    <th>Emulate bulk update </th>
+    <td>
+      <input type="checkbox" id="settings_emulate_bulk_update" name="settings[emulate_bulk_update]" value="on" <%= settings['emulate_bulk_update'] == 'on' ? 'checked' : '' %>></input>
+    </td>
+    <td>If you check, replace function calls the hook of "controller_issues_bulk_edit_before_save".</td>
 </table>

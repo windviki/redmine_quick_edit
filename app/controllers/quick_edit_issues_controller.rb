@@ -33,9 +33,20 @@ class QuickEditIssuesController < ApplicationController
   end
 
   def replace
+    emulate_bulk_update = Setting.plugin_quick_edit['emulate_bulk_update']
+
     Issue.transaction do
       @issues.each do |issue|
+        issue.init_journal(User.current)
         issue.safe_attributes = {@attribute_name => issue[@attribute_name].gsub(@find_regexp, @replace)}
+
+        if emulate_bulk_update == 'on'
+          emulate_params = { 'issue[subject]'.to_sym => issue.subject,
+                             'ids[]'.to_sym => issue.id,
+                             :back_url => params[:back_url] }
+          call_hook(:controller_issues_bulk_edit_before_save, { :params => emulate_params, :issue => issue })
+        end
+
         issue.save!
       end
     end
