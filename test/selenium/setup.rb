@@ -71,44 +71,44 @@ describe "Setup" do
     id = custom_fields_page.find_field(:custom_text)
     if id.nil?
       new_page = custom_fields_page.open_new_page
-      custom_fields_page = new_page.create :custom_text, :string
+      custom_fields_page = new_page.create :custom_text, :string, @redmine_version
     end
 
     id = custom_fields_page.find_field(:custom_long)
     if id.nil?
       new_page = custom_fields_page.open_new_page
-      custom_fields_page = new_page.create :custom_long, :text
+      custom_fields_page = new_page.create :custom_long, :text, @redmine_version
     end
 
     id = custom_fields_page.find_field(:custom_int)
     if id.nil?
       new_page = custom_fields_page.open_new_page
-      custom_fields_page = new_page.create :custom_int, :int
+      custom_fields_page = new_page.create :custom_int, :int, @redmine_version
     end
 
     id = custom_fields_page.find_field(:custom_float)
     if id.nil?
       new_page = custom_fields_page.open_new_page
-      custom_fields_page = new_page.create :custom_float, :float
+      custom_fields_page = new_page.create :custom_float, :float, @redmine_version
     end
 
     id = custom_fields_page.find_field(:custom_date)
     if id.nil?
       new_page = custom_fields_page.open_new_page
-      custom_fields_page = new_page.create :custom_date, :date
+      custom_fields_page = new_page.create :custom_date, :date, @redmine_version
     end
 
     id = custom_fields_page.find_field(:readonly_in_progress)
     if id.nil?
       new_page = custom_fields_page.open_new_page
-      custom_fields_page = new_page.create :readonly_in_progress, :string
+      custom_fields_page = new_page.create :readonly_in_progress, :string, @redmine_version
     end
 
     if @redmine_version >= 205
       id = custom_fields_page.find_field(:custom_link)
       if id.nil?
         new_page = custom_fields_page.open_new_page
-        custom_fields_page = new_page.create :custom_link, :link
+        custom_fields_page = new_page.create :custom_link, :link, @redmine_version
       end
     end
   end
