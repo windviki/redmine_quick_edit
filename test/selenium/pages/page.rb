@@ -86,6 +86,10 @@ module QuickEdit
           @driver.switch_to.alert
         end
 
+        def open_my_apikey
+          MyApiKeyPage.open @driver, @base_url, @project
+        end
+
         def open_admin_info
           AdminInfoPage.open @driver, @base_url, @project
         end

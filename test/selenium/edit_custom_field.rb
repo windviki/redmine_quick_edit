@@ -26,7 +26,9 @@ describe "Edit custom field" do
     # open issues
     start_page = QuickEdit::Test::Pages::StartPage.new(@driver, @base_url, @default_project)
     first_page = start_page.login @default_user, @default_password
-    @issues_page = first_page.open_issues
+    apikey_page = first_page.open_my_apikey
+    @api_key = apikey_page.key
+    @issues_page = apikey_page.open_issues
 
     # get issue id for test
     @issue_id = @issues_page.issue_ids_on_page().first().to_i
@@ -201,9 +203,9 @@ describe "Edit custom field" do
   end
 
   def get_custom_fields(issue_id)
-    json = get_json("issues/#{issue_id}.json")
+    json = get_json("/custom_fields.json?key=#{@api_key}")
 
-    json["issue"]["custom_fields"]
+    json["custom_fields"]
   end
 
   def get_json(path)
