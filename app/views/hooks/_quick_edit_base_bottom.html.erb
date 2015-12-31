@@ -41,6 +41,8 @@ function quick_edit_drag_and_drop_init() {
   
     $("tr.issue").droppable({
       drop: function (event, ui) {
+        if (!ui.draggable.hasClass("context-menu-selection")) return;
+
         var update_ids = quick_edit_get_selections();
         var new_parent_id = quick_edit_get_issue_id_from_element(this);
         if (!new_parent_id) return;
