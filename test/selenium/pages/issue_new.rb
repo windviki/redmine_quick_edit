@@ -20,7 +20,7 @@ module QuickEdit
         def create(tracker, subject)
           select_tracker tracker
           input_text :id, :issue_subject, subject
-          click :name, :commit
+          click :css, 'input[type="submit"][name="commit"]'
 
           IssueShowPage.new @driver, @base_url, @project
         end
