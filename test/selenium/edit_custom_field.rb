@@ -159,26 +159,26 @@ describe "Edit custom field" do
     first_page = start_page.login("dev1", "dummy")
     @issues_page = first_page.open_issues
 
-    field_id = get_custom_field(@issue_id, :readonly_in_progress)["id"]
+    field_id = select_field(get_custom_field_defs(), :readonly_in_progress)["id"]
     menu_item = @issues_page.find_quick_edit_menu_for_custom_field(@issue_id, field_id)
 
     expect( menu_item.attribute("class") ).to eq "quick_edit icon-edit disabled"
   end
 
   def edit_custom_field(issue_id, custom_field_name, new_value)
-    cf = get_custom_field(issue_id, custom_field_name)
+    cf = select_field(get_custom_field_defs(), custom_field_name)
     cf_id = cf["id"]
 
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(:custom_field, cf_id)
     @issues_page = quick_edit.update_field(issue_id, menu_selector, new_value)
 
-    cf = get_custom_field(issue_id, custom_field_name)
+    cf = select_field(get_custom_fields(issue_id), custom_field_name)
     cf["value"]
   end
 
   def edit_custom_field_with_alert(issue_id, custom_field_name, new_value="")
-    cf = get_custom_field(issue_id, custom_field_name)
+    cf = select_field(get_custom_field_defs(), custom_field_name)
     cf_id = cf["id"]
 
     quick_edit = @issues_page.open_context(issue_id)
@@ -187,25 +187,26 @@ describe "Edit custom field" do
     quick_edit.alert.accept
     quick_edit.cancel_quick_edit
 
-    cf = get_custom_field(issue_id, custom_field_name)
+    cf = select_field(get_custom_fields(issue_id), custom_field_name)
     cf["value"]
   end
 
-
-  def get_custom_field(issue_id, custom_field_name)
-    cf_hash_list = get_custom_fields(issue_id)
-
-    cf_hash = cf_hash_list.select do |cf_hash|
+  def select_field(fields, custom_field_name)
+    fields.find do |cf_hash|
       cf_hash["name"] == custom_field_name.to_s
     end
-
-    cf_hash.first
   end
 
-  def get_custom_fields(issue_id)
+  def get_custom_field_defs
     json = get_json("/custom_fields.json?key=#{@api_key}")
 
     json["custom_fields"]
+  end
+
+  def get_custom_fields(issue_id)
+    json = get_json("issues/#{issue_id}.json")
+
+    json["issue"]["custom_fields"]
   end
 
   def get_json(path)
