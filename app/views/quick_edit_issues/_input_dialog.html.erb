@@ -5,7 +5,6 @@
   dialog_size[1] += 160 # for notes
   dialog_size[1] += 25 if @dialog_params[:attribute_name]==:description
   dialog_size[1] += 50 unless @dialog_params[:description].nil?
-#  dialog_size[1] += 170 if @dialog_params[:replacable]
 
   textarea_size = parse_size(Setting.plugin_quick_edit['textarea_size'], 10...256, 80, 10...256, 10)
 %>
