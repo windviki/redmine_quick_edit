@@ -1,10 +1,11 @@
 <%
-  dialog_size = parse_size(Setting.plugin_quick_edit['input_dialog_base_size'], 480...2048, 480, 280...2048,280)
+  dialog_size = parse_size(Setting.plugin_quick_edit['input_dialog_base_size'], 480...2048, 500, 280...2048, 280)
   dialog_size[0] += 227 if @dialog_params[:field_type] == :text || @dialog_params[:field_type] == :string || @dialog_params[:field_type] == :link
-  dialog_size[1] += 134 if @dialog_params[:field_type] == :text
-  dialog_size[1] += 31 if @dialog_params[:attribute_name]==:description
+  dialog_size[1] += 130 if @dialog_params[:field_type] == :text
+  dialog_size[1] += 160 # for notes
+  dialog_size[1] += 25 if @dialog_params[:attribute_name]==:description
   dialog_size[1] += 50 unless @dialog_params[:description].nil?
-  dialog_size[1] += 170 if @dialog_params[:replacable]
+#  dialog_size[1] += 170 if @dialog_params[:replacable]
 
   textarea_size = parse_size(Setting.plugin_quick_edit['textarea_size'], 10...256, 80, 10...256, 10)
 %>
@@ -30,7 +31,7 @@
     <div id="edit-page" class="page">
 
       <%= form_tag({:controller=>'issues', :action=>:bulk_update}) do %>
-      <div class="box">
+      <div class="box" style="overflow: auto">
         <span><%= @dialog_params[:caption] %>:</span>
         <% case @dialog_params[:field_type] %>
         <% when :date %>
@@ -50,6 +51,7 @@
           <% end %>
         <% when :text %>
         <textarea id="new_value"
+               class="full_width"
                cols="<%= textarea_size[0] %>"
                rows="<%= textarea_size[1] %>"
                style="vertical-align:middle;"><%= @dialog_params[:default_value] %></textarea>
@@ -59,6 +61,7 @@
         <% else %>
         <input id="new_value"
                type="text"
+               class="full_width"
                size="80"
                value="<%= @dialog_params[:default_value] %>"></input>
              <% end %>
@@ -66,13 +69,13 @@
           <input id="clear" name="clear" type="checkbox" value="<%= @dialog_params[:clear_pseudo_value] %>" data-disables="#new_value"><%= l(:button_clear) %></input>
         <% end %>
 
-        <fieldset>
+        <fieldset style="margin-top: 10px;">
           <legend><%= l(:field_notes) %></legend>
           <textarea id="notes_for_edit"
-                 name="notes"
-                 cols="<%= textarea_size[0] %>"
-                 rows="<%= textarea_size[1] %>"
-                 style="vertical-align:middle;"></textarea>
+                    name="notes"
+                    class="full_width"
+                    rows="5"
+                    style="vertical-align:middle"></textarea>
           <%= wikitoolbar_for :notes_for_edit %>
         </fieldset>
 
@@ -96,12 +99,14 @@
         <input id="find"
                name="find"
                type="text"
+               class="full_width"
                size="80"
                value="<%= @dialog_params[:default_value] %>"></input><br/>
         <span><%= l(:label_replace_with) %>:</span><br/>
         <input id="replace"
                name="replace"
                type="text"
+               class="full_width"
                size="80"
                value=""></input><br/>
         <div class="options">
