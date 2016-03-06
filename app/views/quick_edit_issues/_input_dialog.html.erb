@@ -80,6 +80,11 @@
                     rows="5"
                     style="vertical-align:middle"></textarea>
           <%= wikitoolbar_for :notes_for_edit %>
+          <input id="issue_private_notes"
+                 name="issue[private_notes]"
+                 type="checkbox"
+                 value="1"/>
+          <label for="issue_private_notes">Private notes</label>
         </fieldset>
         <% @dialog_params[:issue_ids].each do |id| %>
         <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
