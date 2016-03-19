@@ -37,8 +37,9 @@ class QuickEditIssuesController < ApplicationController
 
     Issue.transaction do
       @issues.each do |issue|
-        issue.init_journal(User.current)
+        issue.init_journal(User.current, params[:notes])
         issue.safe_attributes = {@attribute_name => issue[@attribute_name].gsub(@find_regexp, @replace)}
+        issue.safe_attributes = {'private_notes' => (params.has_key?(:private_notes) ? '1' : '0')}
 
         if emulate_bulk_update == 'on'
           emulate_params = { 'issue[subject]'.to_sym => issue.subject,
