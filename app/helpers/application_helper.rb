@@ -29,7 +29,7 @@ module ApplicationHelper
     end
   end
 
-  def quick_edit_link_to(issue_ids, caption, attribute_name, additional_index, back_url, disabled)
+  def quick_edit_link_to(issue_ids, caption, attribute_name, additional_index, back_url, disabled, icon=%s{icon-edit})
      target_specifier = build_target_specifier(attribute_name, additional_index)
 
      ajax_url = quick_edit_issues_edit_path(:ids => issue_ids, :target_specifier => target_specifier, :back_url => back_url)
@@ -41,7 +41,7 @@ module ApplicationHelper
         context_menu_link(
            h(caption),
            ajax_url,
-           :class => 'quick_edit icon-edit',
+           :class => "quick_edit #{icon}",
            :disabled => disabled,
            :remote => true
         )
@@ -49,12 +49,20 @@ module ApplicationHelper
   end   
 
   def build_target_specifier(attribute_name, additional_index)
+    if  attribute_name == :notes
+       return "notes"
+    end
+
     target = "issue[#{attribute_name}]"
     target += "[#{additional_index}]" unless additional_index.nil?
     target
   end
 
   def parse_target_specifier(target_specifier)
+    if target_specifier == "notes"
+      return [:notes]
+    end
+
     /^issue\[(.+?)\].*/ =~ target_specifier
     if Regexp.last_match.nil?
       return nil
@@ -88,6 +96,8 @@ module ApplicationHelper
         l(:field_due_date)
      when :estimated_hours
         l(:field_estimated_hours)
+     when :notes
+        l(:field_notes)
      end
   end
 
@@ -106,6 +116,8 @@ module ApplicationHelper
         :date
      when :estimated_hours
         :float
+     when :notes
+        :text
      end
   end
 

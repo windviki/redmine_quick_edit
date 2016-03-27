@@ -51,6 +51,8 @@
       <%= quick_edit_link_to(@issue_ids, f.name, 'custom_field_values', f.id, back_url, !editable_custom_field(f,@can,readonly_fields)) %>
       <% end %>
 
+      <%= quick_edit_link_to(@issue_ids, get_attribute_caption(:notes), :notes, nil, back_url, false, %s{icon-comment}) %>
+
       <% if @issues.size <= 2  %>
         <% if User.current.allowed_to?(:manage_issue_relations, @project) %>
         <hr>
