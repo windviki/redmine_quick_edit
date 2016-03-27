@@ -84,7 +84,7 @@
                  name="issue[private_notes]"
                  type="checkbox"
                  value="1"/>
-          <label for="issue_private_notes_for_edit">Private notes</label>
+          <label for="issue_private_notes_for_edit"><%= l(:field_private_notes) %></label>
         </fieldset>
         <% @dialog_params[:issue_ids].each do |id| %>
         <input id="ids" name="ids[]" type="hidden" value="<%= id %>"></input>
@@ -135,7 +135,7 @@
                  name="private_notes"
                  type="checkbox"
                  value="1"/>
-          <label for="issue_private_notes_for_replace">Private notes</label>
+          <label for="issue_private_notes_for_replace"><%= l(:field_private_notes) %></label>
         </fieldset>
       </div>
       <input id="target_specifier" name="target_specifier" type="hidden" value="<%= @dialog_params[:target_specifier] %>"></input>
