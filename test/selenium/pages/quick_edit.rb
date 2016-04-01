@@ -25,7 +25,13 @@ module QuickEdit
           menu_item_element = find_element(:css, menu_selector)
           action.move_to(menu_element).click(menu_item_element).perform
 
-          input_text :id, "new_value", new_value
+          if new_value.is_a?(Hash)
+            input_text :id, "new_value", new_value[:value]
+            input_text :id, "notes_for_edit", new_value[:notes][:text] unless new_value[:notes].nil?
+            click :id, "issue_private_notes_for_edit" if new_value[:notes][:is_private]
+          else
+            input_text :id, "new_value", new_value
+          end
 
           buttons = find_elements(:css, "button > span")
           submit_button = buttons.select {|button| button.text =~ /Submit/}
@@ -84,9 +90,18 @@ module QuickEdit
 
           click :id, :replace_switcher
 
-          input_text :id, :find, find_value
-          input_text :css, "#quick_edit_input_dialog #replace", replace_value
-          click :id, :match_case if match_case
+          if find_value.is_a?(Hash)
+            input_text :id, :find, find_value[:find]
+            input_text :css, "#quick_edit_input_dialog #replace", find_value[:replace]
+            click :id, :match_case if find_value[:match_case]
+
+            input_text :id, "notes_for_replace", find_value[:notes][:text] unless find_value[:notes].nil?
+            click :id, "issue_private_notes_for_replace" if find_value[:notes][:is_private]
+          else
+            input_text :id, :find, find_value
+            input_text :css, "#quick_edit_input_dialog #replace", replace_value
+            click :id, :match_case if match_case
+          end
 
           buttons = find_elements(:css, "button > span")
           submit_button = buttons.select {|button| button.text =~ /Submit/}

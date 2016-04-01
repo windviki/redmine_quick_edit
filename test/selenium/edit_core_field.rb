@@ -6,6 +6,7 @@ $: << File.expand_path('../../', __FILE__)
 require 'spec_helper'
 Dir[File.dirname(__FILE__) + '/pages/page.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/pages/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each {|file| require file }
 require "uri"
 require "net/http"
 include RSpec::Expectations
@@ -32,7 +33,7 @@ describe "Edit core field" do
     issue_new_page = @issues_page.open_new_page()
     issue_show_page = issue_new_page.create(:bug, 'first subject')
     @issue_id = issue_show_page.id
-
+    
   end
 
   before(:each) do
@@ -55,6 +56,20 @@ describe "Edit core field" do
     expect( edit(@issue_id, :subject, new_value) ).to eq new_value
 
     expect( edit_with_alert(@issue_id, :subject, "") ).to eq new_value
+  end
+
+  it "subject can edit with public notes" do
+    new_value = {:value => 'subject: with_notes',
+                 :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => false}}
+    expect( edit(@issue_id, :subject, new_value) ).to eq new_value[:value]
+    expect( latest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
+  end
+
+  it "subject can edit with private notes" do
+    new_value = {:value => 'subject: with_notes',
+                 :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => true}}
+    expect( edit(@issue_id, :subject, new_value) ).to eq new_value[:value]
+    expect( lastest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
   end
 
   it "start_date can edit" do
@@ -173,6 +188,5 @@ describe "Edit core field" do
     res = Net::HTTP::get_response(uri)
     JSON.parse(res.body)
   end
-  
   
 end

@@ -67,7 +67,17 @@ module QuickEdit
           menu_item_element = find_element(:css, menu_selector)
           action.move_to(menu_element).click(menu_item_element).perform
 
-          input_text :id, "new_value", new_value
+          if new_value.is_a?(Hash)
+            if new_value[:value] == :none
+              click :css, '#quick_edit_input_dialog #clear'
+            else
+              input_text :id, "new_value", new_value[:value]
+            end
+            input_text :id, "notes_for_edit", new_value[:notes][:text] unless new_value[:notes].nil?
+            click :id, "issue_private_notes_for_edit" if new_value[:notes][:is_private]
+          else
+            input_text :id, "new_value", new_value
+          end
 
           buttons = find_elements(:css, "button > span")
           submit_button = buttons.select {|button| button.text =~ /Submit/}

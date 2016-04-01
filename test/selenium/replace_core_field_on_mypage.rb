@@ -6,6 +6,7 @@ $: << File.expand_path('../../', __FILE__)
 require 'spec_helper'
 Dir[File.dirname(__FILE__) + '/pages/page.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/pages/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each {|file| require file }
 require "uri"
 require "net/http"
 include RSpec::Expectations
@@ -63,6 +64,22 @@ describe "Replace core field" do
     expect( replace_with_alert(@issue_id, :subject, find, replace) ).to eq new_value
   end
 
+  it "subject can replace with private note" do
+    # initialize
+    new_value = 'dummy'
+    edit(@issue_id, :subject, new_value)
+
+    # find & replace
+    new_value = {:value => 'summy',
+                 :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => true}}
+    param = {:find => 'd',
+             :replace => 's',
+             :match_case => false,
+             :notes => new_value[:notes]}
+    expect( replace(@issue_id, :subject, param) ).to eq new_value[:value]
+    expect( latest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
+  end
+
   def edit(issue_id, attribute_name, new_value)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
@@ -78,7 +95,7 @@ describe "Replace core field" do
     end
   end
 
-  def replace(issue_id, attribute_name, find, replace)
+  def replace(issue_id, attribute_name, find, replace=nil)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
     @issues_page = quick_edit.replace(issue_id, menu_selector, find, replace, false)

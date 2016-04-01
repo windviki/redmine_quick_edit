@@ -6,6 +6,7 @@ $: << File.expand_path('../../', __FILE__)
 require 'spec_helper'
 Dir[File.dirname(__FILE__) + '/pages/page.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/pages/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each {|file| require file }
 require "uri"
 require "net/http"
 include RSpec::Expectations
@@ -54,6 +55,18 @@ describe "Clear core field" do
     expect( clear(@issue_id, :start_date) ).to eq nil
   end
 
+  it "start_date can clear with private notes" do
+    # before edit
+    new_value = '1900-01-01'
+    expect( edit(@issue_id, :start_date, new_value) ).to eq new_value
+
+    # clear
+    new_value = {:value => :none,
+                 :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => true}}
+    expect( edit(@issue_id, :start_date, new_value) ).to eq new_value[:value]
+    expect( latest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
+  end
+
   it "due_date can clear" do
     new_value = '2000-01-01'
     expect( edit(@issue_id, :due_date, new_value) ).to eq new_value
@@ -86,6 +99,7 @@ describe "Clear core field" do
 
     attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)
+    field_value = :none if field_value.nil?
 
     if attribute_name == :parent
       field_value["id"]

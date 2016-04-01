@@ -7,6 +7,7 @@ require 'spec_helper'
 Dir[File.dirname(__FILE__) + '/pages/page.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/pages/quick_edit.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/pages/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each {|file| require file }
 require "uri"
 require "net/http"
 include RSpec::Expectations
@@ -57,6 +58,16 @@ describe "Edit on the mypage" do
     expect( edit(@issue_id, :subject, new_value) ).to eq new_value
 
     expect( edit_with_alert(@issue_id, :subject, "") ).to eq new_value
+  end
+
+  it "subject can edit with private note" do
+    new_value = 'dummy'
+    expect( edit(@issue_id, :subject, new_value) ).to eq new_value
+
+    new_value = {:value => 'subject: with_notes',
+                 :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => true}}
+    expect( edit(@issue_id, :subject, new_value) ).to eq new_value[:value]
+    expect( latest_note(@issue_id, @my_page.session_cookie) ).to eq new_value
   end
 
   it "start_date can edit" do

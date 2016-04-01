@@ -131,6 +131,10 @@ module QuickEdit
         def current_user()
           find_element(:css, "a.user.active").text
         end
+
+        def session_cookie()
+          @driver.manage.cookie_named("_redmine_session")
+        end
       end
     end
   end
