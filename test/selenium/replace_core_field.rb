@@ -50,36 +50,46 @@ describe "Replace core field" do
   
   it "subject can replace" do
     new_value = 'NEW text'
-    find = 'initial'
-    replace = 'NEW'
-    match_case = false
-    expect( replace(@issue_id, :subject, find, replace, match_case) ).to eq new_value
+    params = {
+      :find => 'initial',
+      :replace => 'NEW',
+      :match_case => false
+    }
+    expect( replace(@issue_id, :subject, params) ).to eq new_value
 
     # match case test: to lower
     new_value = 'new text'
-    find = 'new'
-    replace = 'new'
-    match_case = true
-    expect( replace(@issue_id, :subject, find, replace, match_case) ).to eq new_value
+    params = {
+      :find => 'new',
+      :replace => 'new',
+      :match_case => true
+    }
+    expect( replace(@issue_id, :subject, params) ).to eq new_value
 
     # special chars test
     new_value = "new<>\'\"&\\+ %text"
-    find = ' '
-    replace = "<>\'\"&\\+ %"
-    match_case = false
-    expect( replace(@issue_id, :subject, find, replace, match_case) ).to eq new_value
+    params = {
+      :find => ' ',
+      :replace => "<>\'\"&\\+ %",
+      :match_case => false
+    }
+    expect( replace(@issue_id, :subject, params) ).to eq new_value
 
     # escape test for meta character of regexp pattern
     new_value = "new<>\'\"&\\++ %text"
-    find = '\\'
-    replace = "\\+"
-    match_case = false
-    expect( replace(@issue_id, :subject, find, replace, match_case) ).to eq new_value
+    params = {
+      :find => '\\',
+      :replace => "\\+",
+      :match_case => false
+    }
+    expect( replace(@issue_id, :subject, params) ).to eq new_value
 
-    find = ''
-    replace = ''
-    match_case = false
-    expect( replace_with_alert(@issue_id, :subject, find, replace, match_case) ).to eq new_value
+    params = {
+      :find => '',
+      :replace => '',
+      :match_case => false
+    }
+    expect( replace_with_alert(@issue_id, :subject, params) ).to eq new_value
   end
 
   it "subject can replace with private note" do
@@ -90,11 +100,11 @@ describe "Replace core field" do
     # find & replace
     new_value = {:value => 'summy',
                  :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => true}}
-    param = {:find => 'd',
+    params = {:find => 'd',
              :replace => 's',
              :match_case => false,
              :notes => new_value[:notes]}
-    expect( replace(@issue_id, :subject, param) ).to eq new_value[:value]
+    expect( replace(@issue_id, :subject, params) ).to eq new_value[:value]
     expect( latest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
   end
 
@@ -113,10 +123,10 @@ describe "Replace core field" do
     end
   end
 
-  def replace(issue_id, attribute_name, find, replace=nil, match_case=nil)
+  def replace(issue_id, attribute_name, params)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
-    @issues_page = quick_edit.replace(issue_id, menu_selector, find, replace, match_case)
+    @issues_page = quick_edit.replace(issue_id, menu_selector, params)
 
     attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)
@@ -128,10 +138,10 @@ describe "Replace core field" do
     end
   end
 
-  def replace_with_alert(issue_id, attribute_name, find, replace, match_case)
+  def replace_with_alert(issue_id, attribute_name, params)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
-    quick_edit.replace(issue_id, menu_selector, find, replace, match_case, true)
+    quick_edit.replace(issue_id, menu_selector, params, true)
     quick_edit.alert.accept
     quick_edit.cancel_quick_edit
 

@@ -50,18 +50,24 @@ describe "Replace core field" do
   
   it "subject can replace" do
     new_value = 'new text'
-    find = 'initial'
-    replace = 'new'
-    expect( replace(@issue_id, :subject, find, replace) ).to eq new_value
+    params = {
+      :find => 'initial',
+      :replace => 'new'
+    }
+    expect( replace(@issue_id, :subject, params) ).to eq new_value
 
     new_value = "new<>\'\"&+% text"
-    find = ' '
-    replace = "<>\'\"&+% "
-    expect( replace(@issue_id, :subject, find, replace) ).to eq new_value
+    params = {
+      :find => ' ',
+      :replace => "<>\'\"&+% "
+    }
+    expect( replace(@issue_id, :subject, params) ).to eq new_value
 
-    find = ''
-    replace = ''
-    expect( replace_with_alert(@issue_id, :subject, find, replace) ).to eq new_value
+    params = {
+      :find => '',
+      :replace => ''
+    }
+    expect( replace_with_alert(@issue_id, :subject, params) ).to eq new_value
   end
 
   it "subject can replace with private note" do
@@ -95,10 +101,10 @@ describe "Replace core field" do
     end
   end
 
-  def replace(issue_id, attribute_name, find, replace=nil)
+  def replace(issue_id, attribute_name, params)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
-    @issues_page = quick_edit.replace(issue_id, menu_selector, find, replace, false)
+    @issues_page = quick_edit.replace(issue_id, menu_selector, params, false)
 
     attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
     field_value = get_core_field(issue_id, attribute_name)
@@ -110,10 +116,10 @@ describe "Replace core field" do
     end
   end
 
-  def replace_with_alert(issue_id, attribute_name, find, replace)
+  def replace_with_alert(issue_id, attribute_name, params)
     quick_edit = @issues_page.open_context(issue_id)
     menu_selector = quick_edit.menu_selector(attribute_name)
-    quick_edit.replace(issue_id, menu_selector, find, replace, false, true)
+    quick_edit.replace(issue_id, menu_selector, params, true)
     quick_edit.alert.accept
     quick_edit.cancel_quick_edit
 
