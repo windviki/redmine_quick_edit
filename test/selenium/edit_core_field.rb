@@ -69,7 +69,7 @@ describe "Edit core field" do
     new_value = {:value => 'subject: with_notes',
                  :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => true}}
     expect( edit(@issue_id, :subject, new_value) ).to eq new_value[:value]
-    expect( lastest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
+    expect( latest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
   end
 
   it "start_date can edit" do
