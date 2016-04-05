@@ -12,6 +12,7 @@ require "net/http"
 include RSpec::Expectations
 
 describe "Replace core field" do
+  let(:helper) { TestHelper.new }
 
   before(:all) do
     profile = Selenium::WebDriver::Firefox::Profile.new
@@ -38,6 +39,9 @@ describe "Replace core field" do
 
   before(:each) do
     @issues_page = @issues_page.open_issues
+    helper.page = @issues_page
+    helper.base_url = @base_url
+    helper.issue_id = @issue_id
   end
   
   after(:each) do
@@ -55,7 +59,7 @@ describe "Replace core field" do
       :replace => 'NEW',
       :match_case => false
     }
-    expect( replace(@issue_id, :subject, params) ).to eq new_value
+    expect( helper.replace(:subject, params) ).to eq new_value
 
     # match case test: to lower
     new_value = 'new text'
@@ -64,7 +68,7 @@ describe "Replace core field" do
       :replace => 'new',
       :match_case => true
     }
-    expect( replace(@issue_id, :subject, params) ).to eq new_value
+    expect( helper.replace(:subject, params) ).to eq new_value
 
     # special chars test
     new_value = "new<>\'\"&\\+ %text"
@@ -73,7 +77,7 @@ describe "Replace core field" do
       :replace => "<>\'\"&\\+ %",
       :match_case => false
     }
-    expect( replace(@issue_id, :subject, params) ).to eq new_value
+    expect( helper.replace(:subject, params) ).to eq new_value
 
     # escape test for meta character of regexp pattern
     new_value = "new<>\'\"&\\++ %text"
@@ -82,20 +86,20 @@ describe "Replace core field" do
       :replace => "\\+",
       :match_case => false
     }
-    expect( replace(@issue_id, :subject, params) ).to eq new_value
+    expect( helper.replace(:subject, params) ).to eq new_value
 
     params = {
       :find => '',
       :replace => '',
       :match_case => false
     }
-    expect( replace_with_alert(@issue_id, :subject, params) ).to eq new_value
+    expect( helper.replace_with_alert(:subject, params) ).to eq new_value
   end
 
   it "subject can replace with private note" do
     # initialize
     new_value = 'dummy'
-    edit(@issue_id, :subject, new_value)
+    helper.edit(:subject, new_value)
 
     # find & replace
     new_value = {:value => 'summy',
@@ -104,68 +108,8 @@ describe "Replace core field" do
              :replace => 's',
              :match_case => false,
              :notes => new_value[:notes]}
-    expect( replace(@issue_id, :subject, params) ).to eq new_value[:value]
-    expect( latest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
+    expect( helper.replace(:subject, params) ).to eq new_value[:value]
+    expect( helper.latest_note ).to eq new_value
   end
-
-  def edit(issue_id, attribute_name, new_value)
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(attribute_name)
-    @issues_page = quick_edit.update_field(issue_id, menu_selector, new_value)
-
-    attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
-    field_value = get_core_field(issue_id, attribute_name)
-
-    if attribute_name == :parent
-      field_value["id"]
-    else
-      field_value
-    end
-  end
-
-  def replace(issue_id, attribute_name, params)
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(attribute_name)
-    @issues_page = quick_edit.replace(issue_id, menu_selector, params)
-
-    attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
-    field_value = get_core_field(issue_id, attribute_name)
-
-    if attribute_name == :parent
-      field_value["id"]
-    else
-      field_value
-    end
-  end
-
-  def replace_with_alert(issue_id, attribute_name, params)
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(attribute_name)
-    quick_edit.replace(issue_id, menu_selector, params, true)
-    quick_edit.alert.accept
-    quick_edit.cancel_quick_edit
-
-    attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
-    field_value = get_core_field(issue_id, attribute_name)
-
-    if attribute_name == :parent
-      field_value["id"]
-    else
-      field_value
-    end
-  end
-
-  def get_core_field(issue_id, attribute_name)
-    json = get_json("issues/#{issue_id}.json")
-
-    json["issue"][attribute_name.to_s]
-  end
-
-  def get_json(path)
-    uri = URI::parse "#{@base_url}#{path}"
-    res = Net::HTTP::get_response(uri)
-    JSON.parse(res.body)
-  end
-  
   
 end

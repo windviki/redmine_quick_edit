@@ -86,8 +86,8 @@ module QuickEdit
           @driver.switch_to.alert
         end
 
-        def open_my_apikey
-          MyApiKeyPage.open @driver, @base_url, @project
+        def open_my_apikey(redmine_version)
+          MyApiKeyPage.open @driver, @base_url, @project, redmine_version
         end
 
         def open_admin_info

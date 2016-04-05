@@ -6,11 +6,13 @@ $: << File.expand_path('../../', __FILE__)
 require 'spec_helper'
 Dir[File.dirname(__FILE__) + '/pages/page.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/pages/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each {|file| require file }
 require "uri"
 require "net/http"
 include RSpec::Expectations
 
 describe "Edit custom field" do
+  let(:helper) { TestHelper.new }
 
   before(:all) do
     profile = Selenium::WebDriver::Firefox::Profile.new
@@ -26,7 +28,8 @@ describe "Edit custom field" do
     # open issues
     start_page = QuickEdit::Test::Pages::StartPage.new(@driver, @base_url, @default_project)
     first_page = start_page.login @default_user, @default_password
-    apikey_page = first_page.open_my_apikey
+    admin_info_page = first_page.open_admin_info
+    apikey_page = admin_info_page.open_my_apikey(admin_info_page.redmine_version)
     @api_key = apikey_page.key
     @issues_page = apikey_page.open_issues
 
@@ -43,6 +46,10 @@ describe "Edit custom field" do
     else
       @issues_page = @issues_page.open_issues
     end
+    helper.base_url = @base_url
+    helper.page = @issues_page
+    helper.issue_id = @issue_id
+    helper.api_key = @api_key
   end
   
   after(:each) do
@@ -55,165 +62,114 @@ describe "Edit custom field" do
   
   it "custom_text can edit" do
     new_value = 'dummy'
-    expect( edit_custom_field(@issue_id, :custom_text, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_text, new_value) ).to eq new_value
 
     new_value = 'custom_text: new_value'
-    expect( edit_custom_field(@issue_id, :custom_text, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_text, new_value) ).to eq new_value
 
     invalid_value = ''
-    expect( edit_custom_field_with_alert(@issue_id, :custom_text, invalid_value) ).to eq new_value
+    expect( helper.edit_custom_field_with_alert(:custom_text, invalid_value) ).to eq new_value
   end
 
   it "custom_int can edit" do
     new_value = '0'
-    expect( edit_custom_field(@issue_id, :custom_int, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_int, new_value) ).to eq new_value
 
     new_value = '2147483647'
-    expect( edit_custom_field(@issue_id, :custom_int, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_int, new_value) ).to eq new_value
 
     new_value = '+10'
-    expect( edit_custom_field(@issue_id, :custom_int, new_value).to_i ).to eq new_value.to_i
+    expect( helper.edit_custom_field(:custom_int, new_value).to_i ).to eq new_value.to_i
 
     new_value = '-10'
-    expect( edit_custom_field(@issue_id, :custom_int, new_value).to_i ).to eq new_value.to_i
+    expect( helper.edit_custom_field(:custom_int, new_value).to_i ).to eq new_value.to_i
 
     invalid_value = 'a'
-    expect( edit_custom_field_with_alert(@issue_id, :custom_int, invalid_value) ).to eq new_value
+    expect( helper.edit_custom_field_with_alert(:custom_int, invalid_value) ).to eq new_value
 
     invalid_value = ''
-    expect( edit_custom_field_with_alert(@issue_id, :custom_int, "") ).to eq new_value
+    expect( helper.edit_custom_field_with_alert(:custom_int, "") ).to eq new_value
   end
 
   it "custom_date can edit" do
     new_value = '1900-01-01'
-    expect( edit_custom_field(@issue_id, :custom_date, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_date, new_value) ).to eq new_value
 
     new_value = '2015-01-01'
-    expect( edit_custom_field(@issue_id, :custom_date, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_date, new_value) ).to eq new_value
 
     invalid_value = '2015-01-0a'
-    expect( edit_custom_field_with_alert(@issue_id, :custom_date, invalid_value) ).to eq new_value
+    expect( helper.edit_custom_field_with_alert(:custom_date, invalid_value) ).to eq new_value
 
     invalid_value = ''
-    expect( edit_custom_field_with_alert(@issue_id, :custom_date, invalid_value) ).to eq new_value
+    expect( helper.edit_custom_field_with_alert(:custom_date, invalid_value) ).to eq new_value
   end
 
   it "custom_long can edit" do
     new_value = 'dummy'
-    expect( edit_custom_field(@issue_id, :custom_long, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_long, new_value) ).to eq new_value
 
     new_value = 'custom_long: new_value '
-    expect( edit_custom_field(@issue_id, :custom_long, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_long, new_value) ).to eq new_value
 
     invalid_value = ''
-    expect( edit_custom_field_with_alert(@issue_id, :custom_long, invalid_value) ).to eq new_value
+    expect( helper.edit_custom_field_with_alert(:custom_long, invalid_value) ).to eq new_value
   end
 
   it "custom_float can edit" do
     new_value = '0'
-    expect( edit_custom_field(@issue_id, :custom_float, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_float, new_value) ).to eq new_value
 
     new_value = '0.1'
-    expect( edit_custom_field(@issue_id, :custom_float, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit_custom_field(:custom_float, new_value).to_f ).to eq new_value.to_f
 
     new_value = '+0.1'
-    expect( edit_custom_field(@issue_id, :custom_float, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit_custom_field(:custom_float, new_value).to_f ).to eq new_value.to_f
 
     new_value = '-0.1'
-    expect( edit_custom_field(@issue_id, :custom_float, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit_custom_field(:custom_float, new_value).to_f ).to eq new_value.to_f
 
     new_value = '0.1e2'
-    expect( edit_custom_field(@issue_id, :custom_float, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit_custom_field(:custom_float, new_value).to_f ).to eq new_value.to_f
 
     new_value = '0.1e-2'
-    expect( edit_custom_field(@issue_id, :custom_float, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit_custom_field(:custom_float, new_value).to_f ).to eq new_value.to_f
 
     invalid_value = ''
-    expect( edit_custom_field_with_alert(@issue_id, :custom_float, invalid_value) ).to eq new_value
+    expect( helper.edit_custom_field_with_alert(:custom_float, invalid_value) ).to eq new_value
   end
 
   it "custom_link can edit" do
-    admin_info_page = @issues_page.open_admin_info
+    admin_info_page = helper.page.open_admin_info
     redmine_version = admin_info_page.redmine_version
 
 
     if redmine_version >= 205
 
-      @issues_page = admin_info_page.open_issues
+      helper.page = admin_info_page.open_issues
   
       new_value = 'dummy'
-      expect( edit_custom_field(@issue_id, :custom_link, new_value) ).to eq new_value
+      expect( helper.edit_custom_field(:custom_link, new_value) ).to eq new_value
   
       new_value = 'custom_link'
-      expect( edit_custom_field(@issue_id, :custom_link, new_value) ).to eq new_value
+      expect( helper.edit_custom_field(:custom_link, new_value) ).to eq new_value
   
       invalid_value = ''
-      expect( edit_custom_field_with_alert(@issue_id, :custom_link, invalid_value) ).to eq new_value
+      expect( helper.edit_custom_field_with_alert(:custom_link, invalid_value) ).to eq new_value
 
     end
   end
 
   it "readonly field can not edit" do
-    welcome_page = @issues_page.logout
+    welcome_page = helper.page.logout
     start_page = welcome_page.open_login
     first_page = start_page.login("dev1", "dummy")
-    @issues_page = first_page.open_issues
+    @issues_page = helper.page = first_page.open_issues
 
-    field_id = select_field(get_custom_field_defs(), :readonly_in_progress)["id"]
-    menu_item = @issues_page.find_quick_edit_menu_for_custom_field(@issue_id, field_id)
+    field_id = helper.select_field(helper.get_custom_field_defs(), :readonly_in_progress)["id"]
+    menu_item = helper.page.find_quick_edit_menu_for_custom_field(helper.issue_id, field_id)
 
     expect( menu_item.attribute("class") ).to eq "quick_edit icon-edit disabled"
   end
-
-  def edit_custom_field(issue_id, custom_field_name, new_value)
-    cf = select_field(get_custom_field_defs(), custom_field_name)
-    cf_id = cf["id"]
-
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(:custom_field, cf_id)
-    @issues_page = quick_edit.update_field(issue_id, menu_selector, new_value)
-
-    cf = select_field(get_custom_fields(issue_id), custom_field_name)
-    cf["value"]
-  end
-
-  def edit_custom_field_with_alert(issue_id, custom_field_name, new_value="")
-    cf = select_field(get_custom_field_defs(), custom_field_name)
-    cf_id = cf["id"]
-
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(:custom_field, cf_id)
-    quick_edit.update_field(issue_id, menu_selector, new_value, true)
-    quick_edit.alert.accept
-    quick_edit.cancel_quick_edit
-
-    cf = select_field(get_custom_fields(issue_id), custom_field_name)
-    cf["value"]
-  end
-
-  def select_field(fields, custom_field_name)
-    fields.find do |cf_hash|
-      cf_hash["name"] == custom_field_name.to_s
-    end
-  end
-
-  def get_custom_field_defs
-    json = get_json("/custom_fields.json?key=#{@api_key}")
-
-    json["custom_fields"]
-  end
-
-  def get_custom_fields(issue_id)
-    json = get_json("issues/#{issue_id}.json")
-
-    json["issue"]["custom_fields"]
-  end
-
-  def get_json(path)
-    uri = URI::parse "#{@base_url}#{path}"
-    res = Net::HTTP::get_response(uri)
-    JSON.parse(res.body)
-  end
-  
   
 end

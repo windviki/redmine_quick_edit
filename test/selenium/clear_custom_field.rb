@@ -6,11 +6,13 @@ $: << File.expand_path('../../', __FILE__)
 require 'spec_helper'
 Dir[File.dirname(__FILE__) + '/pages/page.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/pages/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each {|file| require file }
 require "uri"
 require "net/http"
 include RSpec::Expectations
 
 describe "Clear custom field" do
+  let(:helper) { TestHelper.new }
 
   before(:all) do
     profile = Selenium::WebDriver::Firefox::Profile.new
@@ -26,7 +28,10 @@ describe "Clear custom field" do
     # open issues
     start_page = QuickEdit::Test::Pages::StartPage.new(@driver, @base_url, @default_project)
     first_page = start_page.login @default_user, @default_password
-    @issues_page = first_page.open_issues
+    admin_info_page = first_page.open_admin_info
+    apikey_page = admin_info_page.open_my_apikey(admin_info_page.redmine_version)
+    @api_key = apikey_page.key
+    @issues_page = apikey_page.open_issues
 
     # get issue id for test
     @issue_id = @issues_page.issue_ids_on_page().first().to_i
@@ -41,6 +46,10 @@ describe "Clear custom field" do
     else
       @issues_page = @issues_page.open_issues
     end
+    helper.page = @issues_page
+    helper.base_url = @base_url
+    helper.issue_id = @issue_id
+    helper.api_key = @api_key
   end
   
   after(:each) do
@@ -53,37 +62,37 @@ describe "Clear custom field" do
   
   it "custom_text can clear" do
     new_value = 'dummy'
-    expect( edit_custom_field(@issue_id, :custom_text, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_text, new_value) ).to eq new_value
 
-    expect( clear_custom_field(@issue_id, :custom_text) ).to eq ''
+    expect( helper.clear_custom_field(:custom_text) ).to eq ''
   end
 
   it "custom_int can clear" do
     new_value = '0'
-    expect( edit_custom_field(@issue_id, :custom_int, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_int, new_value) ).to eq new_value
 
-    expect( clear_custom_field(@issue_id, :custom_int) ).to eq ''
+    expect( helper.clear_custom_field(:custom_int) ).to eq ''
   end
 
   it "custom_date can clear" do
     new_value = '1900-01-01'
-    expect( edit_custom_field(@issue_id, :custom_date, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_date, new_value) ).to eq new_value
 
-    expect( clear_custom_field(@issue_id, :custom_date) ).to eq ''
+    expect( helper.clear_custom_field(:custom_date) ).to eq ''
   end
 
   it "custom_long can clear" do
     new_value = 'dummy'
-    expect( edit_custom_field(@issue_id, :custom_long, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_long, new_value) ).to eq new_value
 
-    expect( clear_custom_field(@issue_id, :custom_long) ).to eq ''
+    expect( helper.clear_custom_field(:custom_long) ).to eq ''
   end
 
   it "custom_float can clear" do
     new_value = '0'
-    expect( edit_custom_field(@issue_id, :custom_float, new_value) ).to eq new_value
+    expect( helper.edit_custom_field(:custom_float, new_value) ).to eq new_value
 
-    expect( clear_custom_field(@issue_id, :custom_float) ).to eq ''
+    expect( helper.clear_custom_field(:custom_float) ).to eq ''
   end
 
   it "custom_link can clear" do
@@ -95,58 +104,10 @@ describe "Clear custom field" do
       @issues_page = admin_info_page.open_issues
   
       new_value = 'dummy'
-      expect( edit_custom_field(@issue_id, :custom_link, new_value) ).to eq new_value
+      expect( helper.edit_custom_field(:custom_link, new_value) ).to eq new_value
   
-      expect( clear_custom_field(@issue_id, :custom_link) ).to eq ''
+      expect( helper.clear_custom_field(:custom_link) ).to eq ''
     end
   end
-
-  def edit_custom_field(issue_id, custom_field_name, new_value)
-    cf = get_custom_field(issue_id, custom_field_name)
-    cf_id = cf["id"]
-
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(:custom_field, cf_id)
-    @issues_page = quick_edit.update_field(issue_id, menu_selector, new_value)
-
-    cf = get_custom_field(issue_id, custom_field_name)
-    cf["value"]
-  end
-
-  def clear_custom_field(issue_id, custom_field_name)
-    cf = get_custom_field(issue_id, custom_field_name)
-    cf_id = cf["id"]
-
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(:custom_field, cf_id)
-    @issues_page = quick_edit.clear_field(issue_id, menu_selector)
-    
-
-    cf = get_custom_field(issue_id, custom_field_name)
-    cf["value"]
-  end
-
-  def get_custom_field(issue_id, custom_field_name)
-    cf_hash_list = get_custom_fields(issue_id)
-
-    cf_hash = cf_hash_list.select do |cf_hash|
-      cf_hash["name"] == custom_field_name.to_s
-    end
-
-    cf_hash.first
-  end
-
-  def get_custom_fields(issue_id)
-    json = get_json("issues/#{issue_id}.json")
-
-    json["issue"]["custom_fields"]
-  end
-
-  def get_json(path)
-    uri = URI::parse "#{@base_url}#{path}"
-    res = Net::HTTP::get_response(uri)
-    JSON.parse(res.body)
-  end
-  
   
 end

@@ -40,11 +40,15 @@ module QuickEdit
           @before_page.class.open @driver, @base_url, @project unless desire_alerting
         end
 
-        def clear_field(issue_id, menu_selector)
+        def clear_field(issue_id, menu_selector, notes)
           menu_element = find_element(:id, "quick_edit_context")
           menu_item_element = find_element(:css, menu_selector)
           action.move_to(menu_element).click(menu_item_element).perform
 
+          if notes.is_a?(Hash)
+            input_text :id, "notes_for_edit", notes[:text] unless notes.nil?
+            click :id, "issue_private_notes_for_edit" if notes[:is_private]
+          end
           find_element(:css, '#quick_edit_input_dialog #clear').click
 
           buttons = find_elements(:css, "button > span")

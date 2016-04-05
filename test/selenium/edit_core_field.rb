@@ -12,6 +12,7 @@ require "net/http"
 include RSpec::Expectations
 
 describe "Edit core field" do
+  let(:helper) { TestHelper.new }
 
   before(:all) do
     profile = Selenium::WebDriver::Firefox::Profile.new
@@ -38,6 +39,9 @@ describe "Edit core field" do
 
   before(:each) do
     @issues_page = @issues_page.open_issues
+    helper.page = @issues_page
+    helper.base_url = @base_url
+    helper.issue_id = @issue_id
   end
   
   after(:each) do
@@ -50,143 +54,99 @@ describe "Edit core field" do
   
   it "subject can edit" do
     new_value = 'dummy'
-    expect( edit(@issue_id, :subject, new_value) ).to eq new_value
+    expect( helper.edit(:subject, new_value) ).to eq new_value
 
     new_value = 'subject: new_value'
-    expect( edit(@issue_id, :subject, new_value) ).to eq new_value
+    expect( helper.edit(:subject, new_value) ).to eq new_value
 
-    expect( edit_with_alert(@issue_id, :subject, "") ).to eq new_value
+    expect( helper.edit_with_alert(:subject, "") ).to eq new_value
   end
 
   it "subject can edit with public notes" do
     new_value = {:value => 'subject: with_notes',
                  :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => false}}
-    expect( edit(@issue_id, :subject, new_value) ).to eq new_value[:value]
-    expect( latest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
+    expect( helper.edit( :subject, new_value) ).to eq new_value[:value]
+    expect( helper.latest_note ).to eq new_value
   end
 
   it "subject can edit with private notes" do
     new_value = {:value => 'subject: with_notes',
                  :notes => {:text => "notes\ntime=" + (Time.now.to_s), :is_private => true}}
-    expect( edit(@issue_id, :subject, new_value) ).to eq new_value[:value]
-    expect( latest_note(@issue_id, @issues_page.session_cookie) ).to eq new_value
+    expect( helper.edit( :subject, new_value) ).to eq new_value[:value]
+    expect( helper.latest_note ).to eq new_value
   end
 
   it "start_date can edit" do
     new_value = '1900-01-01'
-    expect( edit(@issue_id, :start_date, new_value) ).to eq new_value
+    expect( helper.edit( :start_date, new_value) ).to eq new_value
 
     new_value = '1900-01-02'
-    expect( edit(@issue_id, :start_date, new_value) ).to eq new_value
+    expect( helper.edit( :start_date, new_value) ).to eq new_value
 
     invalid_value = '1900-01-0a'
-    expect( edit_with_alert(@issue_id, :start_date, invalid_value) ).to eq new_value
+    expect( helper.edit_with_alert( :start_date, invalid_value) ).to eq new_value
 
     invalid_value = ''
-    expect( edit_with_alert(@issue_id, :start_date, invalid_value) ).to eq new_value
+    expect( helper.edit_with_alert( :start_date, invalid_value) ).to eq new_value
   end
 
   it "due_date can edit" do
     new_value = '2000-01-01'
-    expect( edit(@issue_id, :due_date, new_value) ).to eq new_value
+    expect( helper.edit( :due_date, new_value) ).to eq new_value
 
     new_value = '2000-01-02'
-    expect( edit(@issue_id, :due_date, new_value) ).to eq new_value
+    expect( helper.edit( :due_date, new_value) ).to eq new_value
 
     invalid_value = '2000-01-0a'
-    expect( edit_with_alert(@issue_id, :due_date, invalid_value) ).to eq new_value
+    expect( helper.edit_with_alert( :due_date, invalid_value) ).to eq new_value
 
     invalid_value = ''
-    expect( edit_with_alert(@issue_id, :due_date, invalid_value) ).to eq new_value
+    expect( helper.edit_with_alert( :due_date, invalid_value) ).to eq new_value
   end
 
   it "description can edit" do
     new_value = 'dummy'
-    expect( edit(@issue_id, :description, new_value) ).to eq new_value
+    expect( helper.edit( :description, new_value) ).to eq new_value
 
     new_value = 'description: new_value'
-    expect( edit(@issue_id, :description, new_value) ).to eq new_value
+    expect( helper.edit( :description, new_value) ).to eq new_value
 
-    expect( edit_with_alert(@issue_id, :description, "") ).to eq new_value
+    expect( helper.edit_with_alert( :description, "") ).to eq new_value
   end
 
   # unsigned float field
   it "estimated_hours can edit" do
     new_value = '0'
-    expect( edit(@issue_id, :estimated_hours, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit( :estimated_hours, new_value).to_f ).to eq new_value.to_f
 
     new_value = '0.1'
-    expect( edit(@issue_id, :estimated_hours, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit( :estimated_hours, new_value).to_f ).to eq new_value.to_f
 
     new_value = '+0.1'
-    expect( edit(@issue_id, :estimated_hours, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit( :estimated_hours, new_value).to_f ).to eq new_value.to_f
 
     new_value = '0.1e2'
-    expect( edit(@issue_id, :estimated_hours, new_value).to_f ).to eq new_value.to_f
+    expect( helper.edit( :estimated_hours, new_value).to_f ).to eq new_value.to_f
 
     invalid_value = ''
-    expect( edit_with_alert(@issue_id, :estimated_hours, invalid_value) ).to eq new_value.to_f
+    expect( helper.edit_with_alert( :estimated_hours, invalid_value) ).to eq new_value.to_f
   end
 
   it "parent_issue_id can edit" do
     issue_ids = @issues_page.issue_ids_on_page
     issue_new_page = @issues_page.open_new_page()
     issue_show_page = issue_new_page.create(:bug, 'first subject')
-    new_issue_id = issue_show_page.id
-    @issues_page = issue_show_page.open_issues
+    helper.issue_id = issue_show_page.id
+    helper.page = issue_show_page.open_issues
 
     new_value = @issue_id.to_s
-    expect( edit(new_issue_id, :parent_issue_id, new_value) ).to eq new_value.to_i
+    expect( helper.edit(:parent_issue_id, new_value) ).to eq new_value.to_i
 
     invalid_value = ''
-    expect( edit_with_alert(new_issue_id, :parent_issue_id, invalid_value) ).to eq new_value.to_i
+    expect( helper.edit_with_alert(:parent_issue_id, invalid_value) ).to eq new_value.to_i
 
     new_value = @issue_id.to_s
-    expect( edit(new_issue_id, :parent_issue_id, new_value) ).to eq new_value.to_i
+    expect( helper.edit(:parent_issue_id, new_value) ).to eq new_value.to_i
   end
 
-  def edit(issue_id, attribute_name, new_value)
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(attribute_name)
-    @issues_page = quick_edit.update_field(issue_id, menu_selector, new_value)
-
-    attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
-    field_value = get_core_field(issue_id, attribute_name)
-
-    if attribute_name == :parent
-      field_value["id"]
-    else
-      field_value
-    end
-  end
-
-  def edit_with_alert(issue_id, attribute_name, new_value)
-    quick_edit = @issues_page.open_context(issue_id)
-    menu_selector = quick_edit.menu_selector(attribute_name)
-    quick_edit.update_field(issue_id, menu_selector, new_value, true)
-    quick_edit.alert.accept
-    quick_edit.cancel_quick_edit
-
-    attribute_name = :parent if attribute_name.to_sym == :parent_issue_id
-    field_value = get_core_field(issue_id, attribute_name)
-
-    if attribute_name == :parent
-      field_value["id"]
-    else
-      field_value
-    end
-  end
-
-  def get_core_field(issue_id, attribute_name)
-    json = get_json("issues/#{issue_id}.json")
-
-    json["issue"][attribute_name.to_s]
-  end
-
-  def get_json(path)
-    uri = URI::parse "#{@base_url}#{path}"
-    res = Net::HTTP::get_response(uri)
-    JSON.parse(res.body)
-  end
-  
 end
