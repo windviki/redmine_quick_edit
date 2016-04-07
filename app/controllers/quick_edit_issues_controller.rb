@@ -3,20 +3,14 @@ class QuickEditIssuesController < ApplicationController
   before_filter :find_issues
   before_filter :check_first_issue
   before_filter :check_target_specifier
+  before_filter :init_dialog_params
   before_filter :check_replace_args, :only => [:replace, :replace_preview]
 
   def edit
-    @dialog_params = nil
-    @issue.available_custom_fields.each do |f|
-      custom_field_name = 'issue[custom_field_values][%d]' % f.id
-      if custom_field_name == @target_specifier
-        @dialog_params = get_input_dialog_params_for_custom_fields(@issue, @target_specifier, f)
-        @dialog_params[:description] = f.description.presence if f.attributes().has_key?('description')
-      end
-    end
-    if @dialog_params.nil?
-      @dialog_params = get_input_dialog_params_for_core_fields(@issue, @target_specifier)
+    if @custom_field.nil?
       @dialog_params[:description] = nil
+    else
+      @dialog_params[:description] = @custom_field.description.presence if @custom_field.attributes().has_key?('description')
     end
     @dialog_params[:description] = nil if (@dialog_params[:description] == "")
     @dialog_params[:issue_ids] = params[:ids]
@@ -26,9 +20,7 @@ class QuickEditIssuesController < ApplicationController
 
   def replace_preview
     @replaced_issues = @issues.map do |issue|
-      { :id  => issue.id,
-        :before => issue[@attribute_name],
-        :after => issue[@attribute_name].gsub(@find_regexp, @replace) }
+      eval_replace(issue, @attribute_name, @find_regexp, @replace)
     end
   end
 
@@ -38,11 +30,12 @@ class QuickEditIssuesController < ApplicationController
     Issue.transaction do
       @issues.each do |issue|
         issue.init_journal(User.current, params[:notes])
-        issue.safe_attributes = {@attribute_name => issue[@attribute_name].gsub(@find_regexp, @replace)}
+        replace_result = eval_replace(issue, @attribute_name, @find_regexp, @replace)
+        issue.safe_attributes = {@attribute_name => replace_result[:after]}
         issue.safe_attributes = {'private_notes' => (params.has_key?(:private_notes) ? '1' : '0')}
 
         if emulate_bulk_update == 'on'
-          emulate_params = { 'issue[subject]'.to_sym => issue.subject,
+          emulate_params = { @target_specifier.to_sym => replace_result[after],
                              'ids[]'.to_sym => issue.id,
                              :back_url => params[:back_url] }
           call_hook(:controller_issues_bulk_edit_before_save, { :params => emulate_params, :issue => issue })
@@ -84,9 +77,12 @@ private
 
     @attribute_name = parsed[0]
     if parsed.size == 2
-      @custom_field_id = parsed[1]
-    else
-      @custom_field_id = ""
+      custom_field_id = parsed[1]
+      @custom_field = @issue.available_custom_fields.detect {|f| f.id.to_s == custom_field_id}
+      if @custom_field.nil?
+        logger.warn "### quick edit ### no available custom field. target_specifier=" + @target_specifier
+        render_404
+      end
     end
 
     if @attribute_name == :notes
@@ -100,8 +96,17 @@ private
   end
 
   # rails filter
+  def init_dialog_params
+    if @custom_field.nil?
+      @dialog_params = get_input_dialog_params_for_core_fields(@issue, @target_specifier)
+    else
+      @dialog_params = get_input_dialog_params_for_custom_fields(@issue, @target_specifier, @custom_field)
+    end
+  end
+
+  # rails filter
   def check_replace_args
-    unless @attribute_name.include?('subject')
+    unless @dialog_params[:replacable]
       logger.warn "### quick edit ### no support. target_specifier=" + @target_specifier
       render_error :status => 400
       return
@@ -207,4 +212,12 @@ private
     help_message
   end
 
+  def eval_replace(issue, attribute_name, find_regexp, replace)
+      before = issue[attribute_name].to_s # nil to ""
+      after = before.gsub(find_regexp, replace)
+
+      { :id  => issue.id,
+        :before => before,
+        :after =>  after}
+  end
 end
