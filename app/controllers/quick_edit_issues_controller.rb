@@ -3,14 +3,14 @@ class QuickEditIssuesController < ApplicationController
   before_filter :find_issues
   before_filter :check_first_issue
   before_filter :check_target_specifier
-  before_filter :init_dialog_params
   before_filter :check_replace_args, :only => [:replace, :replace_preview]
 
   def edit
-    if @custom_field.nil?
+    custom_field = @dialog_params[:custom_field]
+    if custom_field.nil?
       @dialog_params[:description] = nil
     else
-      @dialog_params[:description] = @custom_field.description.presence if @custom_field.attributes().has_key?('description')
+      @dialog_params[:description] = custom_field.description.presence if custom_field.attributes().has_key?('description')
     end
     @dialog_params[:description] = nil if (@dialog_params[:description] == "")
     @dialog_params[:issue_ids] = params[:ids]
@@ -78,29 +78,24 @@ private
     @attribute_name = parsed[0]
     if parsed.size == 2
       custom_field_id = parsed[1]
-      @custom_field = @issue.available_custom_fields.detect {|f| f.id.to_s == custom_field_id}
-      if @custom_field.nil?
+      custom_field = @issue.available_custom_fields.detect {|f| f.id.to_s == custom_field_id}
+      if custom_field.nil?
         logger.warn "### quick edit ### no available custom field. target_specifier=" + @target_specifier
         render_404
       end
     end
 
-    if @attribute_name == :notes
-      return
+    unless @attribute_name == :notes
+      unless @issue.safe_attribute_names.include?(@attribute_name)
+        logger.warn "### quick edit ### no safe attribute. target_specifier=" + @target_specifier
+        render_404
+      end
     end
 
-    unless @issue.safe_attribute_names.include?(@attribute_name)
-      logger.warn "### quick edit ### no safe attribute. target_specifier=" + @target_specifier
-      render_404
-    end
-  end
-
-  # rails filter
-  def init_dialog_params
-    if @custom_field.nil?
+    if custom_field.nil?
       @dialog_params = get_input_dialog_params_for_core_fields(@issue, @target_specifier)
     else
-      @dialog_params = get_input_dialog_params_for_custom_fields(@issue, @target_specifier, @custom_field)
+      @dialog_params = get_input_dialog_params_for_custom_fields(@issue, @target_specifier, custom_field)
     end
   end
 
@@ -113,13 +108,13 @@ private
     end
 
     options = 0
-    match_case = params[:match_case]
-    unless match_case.nil? || match_case.empty?
+    match_case = params[:match_case].to_s # nil to ""
+    unless match_case.empty?
       options = Regexp::IGNORECASE
     end
 
-    @find = params[:find]
-    if @find.nil? || @find == ""
+    @find = params[:find].to_s # nil to ""
+    if @find.empty?
       logger.warn "### quick edit ### missing params[find]."
       render_error :status => 400
       return
@@ -132,7 +127,7 @@ private
     end
     @find_regexp = Regexp.new(Regexp.escape(@find), options)
 
-    @replace = params[:replace]
+    @replace = params[:replace].to_s # nil to ""
     if @replace.length > 127
       logger.warn "### quick edit ### length over params[replace]."
       render_error :status => 400
@@ -163,7 +158,8 @@ private
         :validation_pattern => validation_pattern,
         :help_message => help_message,
         :clear_pseudo_value => clear_pseudo_value,
-        :replacable => replacable
+        :replacable => replacable,
+        :custom_field => nil
       }
   end
 
@@ -187,7 +183,8 @@ private
         :validation_pattern => validation_pattern,
         :help_message => help_message,
         :clear_pseudo_value => '__none__',
-        :replacable => replacable
+        :replacable => replacable,
+        :custom_field => custom_field
       }
   end
 
