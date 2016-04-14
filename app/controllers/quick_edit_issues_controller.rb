@@ -88,7 +88,8 @@ private
     unless @attribute_name == :notes
       unless @issue.safe_attribute_names.include?(@attribute_name)
         logger.warn "### quick edit ### no safe attribute. target_specifier=" + @target_specifier
-        render_404
+        @error_message = l(:text_can_not_edit)
+        render
       end
     end
 

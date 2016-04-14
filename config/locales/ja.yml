@@ -13,3 +13,5 @@ ja:
   text_none_is_invalid: noneは特別な意味を持つため指定できません。
   text_invalid_format: 入力された値の書式に誤りがあります。
   text_multiple_update_confirm: 複数のチケットが同じ値に更新されます。よろしいですか？
+
+  text_can_not_edit: この値は編集できません。

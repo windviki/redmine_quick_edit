@@ -1,0 +1,16 @@
+<div id="quick_edit_input_dialog" class="flash error" 
+  style="display: none; z-index: 1000; position: fixed; top: 10px; left: 10px; opacity: 0.9; min-width: 300px; background-color: #ffe3e3;">
+  <div style="padding: 10px 5px;"> 
+    <span><%= @error_message %></span>
+  </div> 
+</div>
+
+<script>
+//<![CDATA[
+  var dialog = $("#quick_edit_input_dialog");
+  dialog.fadeIn(500, function () {
+    setTimeout( function() { dialog.fadeOut(); }, 3000)
+   });
+  $("#quick_edit_input_dialog").click( function(e) { e.stopPropagation(); } );
+//]]>
+</script>
