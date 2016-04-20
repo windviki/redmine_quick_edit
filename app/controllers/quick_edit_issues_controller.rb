@@ -64,14 +64,14 @@ private
     @target_specifier = params[:target_specifier]
     if @target_specifier.nil?
       logger.warn "### quick edit ### missing target specifier."
-      render_404
+      render_error :status => 400
       return
     end
 
     parsed = parse_target_specifier(@target_specifier)
     if parsed.nil? || parsed.empty?
       logger.warn "### quick edit ### invalid target specifier. target_specifier=" + @target_specifier
-      render_404
+      render_error :status => 400
       return
     end
 
@@ -81,15 +81,16 @@ private
       custom_field = @issue.available_custom_fields.detect {|f| f.id.to_s == custom_field_id}
       if custom_field.nil?
         logger.warn "### quick edit ### no available custom field. target_specifier=" + @target_specifier
-        render_404
+        head 409, {"X-Quick-Edit-Error" => l(:text_can_not_edit)}
+        return false
       end
     end
 
     unless @attribute_name == :notes
       unless @issue.safe_attribute_names.include?(@attribute_name)
         logger.warn "### quick edit ### no safe attribute. target_specifier=" + @target_specifier
-        @error_message = l(:text_can_not_edit)
-        render
+        head 409, {"X-Quick-Edit-Error" => l(:text_can_not_edit)}
+        return false
       end
     end
 

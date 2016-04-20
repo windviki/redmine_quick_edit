@@ -1,7 +1,3 @@
 $("#quick_edit_input_dialogs").html(
-  <% if @error_message.nil? %>
   "<%= escape_javascript(render :partial => 'input_dialog', :layout => false ) %>"
-  <% else %>
-  "<%= escape_javascript(render :partial => 'error_dialog', :layout => false ) %>"
-  <% end %>
 );

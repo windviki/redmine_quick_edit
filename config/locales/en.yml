@@ -14,4 +14,5 @@ en:
   text_invalid_format: invalid format.
   text_multiple_update_confirm: You selected many issues to be the non unique value.\nAre you sure you want to update?
 
+  text_issue_not_found: The issue not found. issue=%{id}
   text_can_not_edit: This value can't be edited.

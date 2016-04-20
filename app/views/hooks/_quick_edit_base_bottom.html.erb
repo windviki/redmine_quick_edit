@@ -1,5 +1,11 @@
 <div id="quick_edit">
   <div id="quick_edit_input_dialogs"></div>
+  <div id="quick_edit_flash" class="flash error" 
+    style="display: none; z-index: 1000; position: fixed; top: 10px; left: 10px; opacity: 0.9; min-width: 300px; background-color: #ffe3e3;">
+    <div style="padding: 10px 5px;"> 
+      <span id="quick_edit_flash_message"></span>
+    </div> 
+  </div>
 </div>
 <script>
 //<![CDATA[
@@ -8,12 +14,27 @@ function quick_edit_log(message){
     console.log("quick_edit: "+message);
 }
 
+function quick_edit_setup_ajax_error_handler() {
+  $(document).ajaxError( function (event, jqXHR, ajaxSettings, thrownError) {
+    if (! (/quick_edit/.test(ajaxSettings.url))) return;
+
+    var message =  jqXHR.status + " " + (jqXHR.getResponseHeader("X-Quick-Edit-Error") || thrownError || jqXHR.statusText);
+    $("#quick_edit_flash_message").text(message);
+
+    var flash = $("#quick_edit_flash");
+    flash.click( function(e) { e.stopPropagation(); } );
+    flash.fadeIn(500, function () {
+      setTimeout( function() { flash.fadeOut(); }, 3000)
+    });
+  });
+}
 
 var offsetY = /[?&]offsetY=(\d+).*/g.exec(location.href);
 if (offsetY) {
   window.scrollTo(0, offsetY[1]);
 }
 
+quick_edit_setup_ajax_error_handler();
 quick_edit_drag_and_drop_init();
 
 function quick_edit_drag_and_drop_init() {

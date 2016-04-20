@@ -14,4 +14,5 @@ ja:
   text_invalid_format: 入力された値の書式に誤りがあります。
   text_multiple_update_confirm: 複数のチケットが同じ値に更新されます。よろしいですか？
 
+  text_issue_not_found: 指定されたチケットは存在しません。チケットID=%{id}
   text_can_not_edit: この値は編集できません。
