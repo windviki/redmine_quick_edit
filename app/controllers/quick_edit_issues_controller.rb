@@ -29,19 +29,21 @@ class QuickEditIssuesController < ApplicationController
 
     Issue.transaction do
       @issues.each do |issue|
-        issue.init_journal(User.current, params[:notes])
         replace_result = eval_replace(issue, @attribute_name, @find_regexp, @replace)
-        issue.safe_attributes = {@attribute_name => replace_result[:after]}
-        issue.safe_attributes = {'private_notes' => (params.has_key?(:private_notes) ? '1' : '0')}
+        if replace_result[:before] != replace_result[:after]
+          issue.init_journal(User.current, params[:notes])
+          issue.safe_attributes = {@attribute_name => replace_result[:after]}
+          issue.safe_attributes = {'private_notes' => (params.has_key?(:private_notes) ? '1' : '0')}
 
-        if emulate_bulk_update == 'on'
-          emulate_params = { @target_specifier.to_sym => replace_result[after],
-                             'ids[]'.to_sym => issue.id,
-                             :back_url => params[:back_url] }
-          call_hook(:controller_issues_bulk_edit_before_save, { :params => emulate_params, :issue => issue })
+          if emulate_bulk_update == 'on'
+            emulate_params = { @target_specifier.to_sym => replace_result[after],
+                               'ids[]'.to_sym => issue.id,
+                               :back_url => params[:back_url] }
+            call_hook(:controller_issues_bulk_edit_before_save, { :params => emulate_params, :issue => issue })
+          end
+
+          issue.save!
         end
-
-        issue.save!
       end
     end
 
