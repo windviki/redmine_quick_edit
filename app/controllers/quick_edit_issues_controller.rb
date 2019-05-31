@@ -1,9 +1,9 @@
 class QuickEditIssuesController < ApplicationController
   include ApplicationHelper
-  before_filter :find_issues
-  before_filter :check_first_issue
-  before_filter :check_target_specifier
-  before_filter :check_replace_args, :only => [:replace, :replace_preview]
+  before_action :find_issues
+  before_action :check_first_issue
+  before_action :check_target_specifier
+  before_action :check_replace_args, :only => [:replace, :replace_preview]
 
   def edit
     custom_field = @dialog_params[:custom_field]

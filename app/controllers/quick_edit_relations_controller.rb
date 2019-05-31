@@ -1,6 +1,6 @@
 class QuickEditRelationsController < ApplicationController
-  before_filter :find_issue, :find_project_from_association, :authorize, :only => [:create]
-  before_filter :find_relation, :except => [:create]
+  before_action :find_issue, :find_project_from_association, :authorize, :only => [:create]
+  before_action :find_relation, :except => [:create]
 
   def create
     @relation = IssueRelation.new(params[:relation])
